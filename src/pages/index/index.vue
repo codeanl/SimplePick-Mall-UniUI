@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import CustomNavbar from './components/CustomNavbar.vue'
 import CategoryPanel from './components/CategoryPanel.vue'
+import HotPanel from './components/HotPanel.vue'
 import Swiper from '../../components/Swiper.vue'
 import Guess from '../../components/Guess.vue'
-import { getHomeBannerAPI, getHomeCategoryAPI } from '@/services/home'
+import { getHomeBannerAPI, getHomeCategoryAPI, getHomeHotAPI } from '@/services/home'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
 
@@ -21,11 +22,16 @@ const getHomeCategoryData = async () => {
   categoryList.value = res.data
 }
 
-
+// 获取热门推荐数据
+const hotList = ref<any[]>([])
+const getHomeHotData = async () => {
+  const res = await getHomeHotAPI()
+  hotList.value = res.data
+}
 
 // 页面加载
 onLoad(async () => {
-  await Promise.all([getHomeBannerData(), getHomeCategoryData()])
+  await Promise.all([getHomeBannerData(), getHomeCategoryData(), getHomeHotData()])
 })
 
 </script>
@@ -43,7 +49,7 @@ onLoad(async () => {
         <!-- 分类面板 -->
         <CategoryPanel :list="categoryList" />
         <!-- 热门推荐 -->
-        <!-- <HotPanel :list="hotList" /> -->
+        <HotPanel :list="hotList" />
         <!-- 猜你喜欢 -->
         <Guess ref="guessRef" />
       </template>

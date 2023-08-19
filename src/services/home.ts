@@ -27,7 +27,7 @@ export const getHomeCategoryAPI = () => {
 export const getHomeHotAPI = () => {
   return http<any[]>({
     method: 'GET',
-    url: '/home/hot/mutli',
+    url: '/api/index/subjectList',
   })
 }
 

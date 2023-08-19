@@ -56,9 +56,6 @@ const subCategoryList = computed(() => {
       <scroll-view enable-back-to-top class="secondary" scroll-y>
         <!-- 焦点图 -->
         <Swiper class="banner" :list="bannerList" />
-        <!-- <image mode="aspectFill" class="image" style="height: 280rpx;"
-          src="http://yjy-xiaotuxian-dev.oss-cn-beijing.aliyuncs.com/picture/2021-04-15/4a79180a-1a5a-4042-8a77-4db0b9c800a8.jpg">
-        </image> -->
         <!-- 内容区域 -->
         <view class="panel" v-for="item in subCategoryList" :key="item.id">
           <view class="title">
@@ -66,9 +63,9 @@ const subCategoryList = computed(() => {
             <navigator class="more" hover-class="none">全部</navigator>
           </view>
           <view class="section">
-            <navigator v-for="goods in item.goods" :key="goods.id" class="goods" hover-class="none"
-              :url="`/pages/goods/goods?id=${goods.id}`">
-              <image class="image" :src="goods.picture"></image>
+            <navigator v-for="goods in item.productList" :key="goods.id" class="goods" hover-class="none"
+              :url="`/pages/goods/index?id=${goods.id}`">
+              <image class="image" :src="goods.pic"></image>
               <view class="name ellipsis">{{ goods.name }}</view>
               <view class="price">
                 <text class="symbol">¥</text>
