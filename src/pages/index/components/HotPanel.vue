@@ -13,7 +13,8 @@ defineProps<{
       <view class="title">
         <text class="title-text">{{ item.name }}</text>
       </view>
-      <navigator hover-class="none" :url="`/pages/hot/index?type=${item.type}`" class="cards">
+      <navigator hover-class="none" :url="`/pages/hot/index?id=${item.id}&&pic=${item.pic}&&name=${item.name} `"
+        class="cards">
         <image class="image" mode="aspectFit" :src="item.pic">
         </image>
       </navigator>

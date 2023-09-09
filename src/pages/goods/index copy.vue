@@ -10,7 +10,6 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 import { onLoad } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 import { getProductInfoAPI } from '@/services/home'
-import { addCart } from '@/services/cart'
 import AddressPanel from './components/AddressPanel.vue'
 import ServicePanel from './components/ServicePanel.vue'
 // 接收页面参数
@@ -85,7 +84,7 @@ const openPopup = (name: typeof popupName.value) => {
   popup.value?.open()
 }
 // 是否显示SKU组件
-const isShowSku = ref(false)
+const isShowSku = ref(true)
 // 商品信息
 const localdata = ref({} as SkuPopupLocaldata)
 // 按钮模式
@@ -110,18 +109,13 @@ const selectArrText = computed(() => {
 })
 // 加入购物车事件
 const onAddCart = async (ev: SkuPopupEvent) => {
-  let res = await addCart({ userID: 103, skuID: ev._id, count: ev.buy_num })
-  if (res.code === 200) {
-    uni.showToast({ title: '添加成功' })
-    isShowSku.value = false
-  } else {
-    uni.showToast({ title: '添加失败' })
-  }
+  await postMemberCartAPI({ skuId: ev._id, count: ev.buy_num })
+  uni.showToast({ title: '添加成功' })
+  isShowSku.value = false
 }
 // 立即购买
 const onBuyNow = (ev: SkuPopupEvent) => {
-  console.log(ev._id, ev.buy_num);
-  // uni.navigateTo({ url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}` })
+  uni.navigateTo({ url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}` })
 }
 </script>
 
@@ -192,17 +186,11 @@ const onBuyNow = (ev: SkuPopupEvent) => {
             </view>
           </view>
           <!-- 图片详情 -->
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/77590f0ad6019c15afde116458d1e1b4.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/dd64dc8f28bf1c16d3100a8cd5f17fea.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/d1c2928b0d617cc53e0658ae1331548f.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/229fe41a2d003d359cd3637925c672dc.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/1bef5a5e037ebc23c504ad133851f958.jpg"></image>
-
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/b32ca4101f0168408e697159c52d3fc3.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/dbbfdbab636c6802c1d7ff4a07de02c9.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/567d8ed0970b283e9db7da73d80fa4e3.jpg"></image>
+          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/a8d266886d31f6eb0d7333c815769305.jpg"></image>
+          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/a9bee1cb53d72e6cdcda210071cbd46a.jpg"></image>
         </view>
       </view>
+
     </view>
 
   </scroll-view>

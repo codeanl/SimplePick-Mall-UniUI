@@ -41,3 +41,26 @@ export const getHomeGoodsGuessLikeAPI = (data?: any) => {
     data,
   })
 }
+
+
+/**
+ * 商品详情-小程序
+ */
+export const getProductInfoAPI = (data: any) => {
+  return http<any>({
+    method: 'POST',
+    url: '/api/index/productInfo',
+    data,
+  })
+}
+
+
+export const placeList = (data: any) => {
+  return http<any>({
+    method: 'POST',
+    url: '/api/index/placeList',
+    data,
+  })
+}
+
+

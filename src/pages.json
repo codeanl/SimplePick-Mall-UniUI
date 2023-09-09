@@ -67,6 +67,18 @@
 			"style": {
 				"navigationBarTitleText": "热门推荐"
 			}
+		},
+		{
+			"path": "pages/orderCreate/index",
+			"style": {
+				"navigationBarTitleText": "订单"
+			}
+		},
+		{
+			"path": "pages/detail/index",
+			"style": {
+				"navigationBarTitleText": "订单详情"
+			}
 		}
 	],
 	"globalStyle": {
