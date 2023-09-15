@@ -25,32 +25,6 @@ onLoad(() => {
   getHomeHotData()
 })
 
-// 滚动触底
-const onScrolltolower = async () => {
-  // 获取当前选项
-  const currsubTypes = subTypes.value[activeIndex.value]
-  // 分页条件
-  if (currsubTypes.goodsItems.page < currsubTypes.goodsItems.pages) {
-    // 当前页码累加
-    currsubTypes.goodsItems.page++
-  } else {
-    // 标记已结束
-    currsubTypes.finish = true
-    // 退出并轻提示
-    return uni.showToast({ icon: 'none', title: '没有更多数据了~' })
-  }
-
-  // 调用API传参
-  const res = await getHotRecommendAPI(currUrlMap!.url, {
-    subType: currsubTypes.id,
-    page: currsubTypes.goodsItems.page,
-    pageSize: currsubTypes.goodsItems.pageSize,
-  })
-  // 新的列表选项
-  const newsubTypes = res.result.subTypes[activeIndex.value]
-  // 数组追加
-  currsubTypes.goodsItems.items.push(...newsubTypes.goodsItems.items)
-}
 </script>
 
 <template>
@@ -72,27 +46,12 @@ const onScrolltolower = async () => {
           </view>
         </navigator>
       </view>
+      <view class="loading-text">
+        <!-- {{ productList.finish ? '没有更多数据了~' : '正在加载...' }} -->
+        没有更多数据了~
+      </view>
     </scroll-view>
 
-
-
-    <!-- <scroll-view enable-back-to-top v-for="(item, index) in productList" :key="item.id" v-show="activeIndex === index"
-      scroll-y class="scroll-view" @scrolltolower="onScrolltolower">
-      <view class="goods">
-        <navigator hover-class="none" class="navigator" v-for="goods in productList" :key="goods.id"
-          :url="`/pages/goods/goods?id=${goods.id}`">
-          <image class="thumb" :src="goods.productInfo.pic"></image>
-          <view class="name ellipsis">{{ goods.name }}</view>
-          <view class="price">
-            <text class="symbol">¥</text>
-            <text class="number">{{ goods.price }}</text>
-          </view>
-        </navigator>
-      </view>
-      <view class="loading-text">
-        {{ item.finish ? '没有更多数据了~' : '正在加载...' }}
-      </view>
-    </scroll-view> -->
   </view>
 </template>
 
@@ -105,7 +64,6 @@ page {
 .viewport {
   display: flex;
   flex-direction: column;
-  height: 100%;
   padding: 180rpx 0 0;
   position: relative;
 }

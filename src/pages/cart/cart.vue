@@ -4,6 +4,7 @@ import { useMemberStore } from '@/stores'
 import { onShow } from '@dcloudio/uni-app'
 import { computed, ref } from 'vue'
 import { useGuessList } from '@/composables'
+import Guess from '../../components/Guess.vue'
 // 获取会员Store
 const memberStore = useMemberStore()
 
@@ -134,7 +135,7 @@ const gotoPayment = () => {
     <!-- 已登录: 显示购物车 -->
     <template v-if="memberStore.profile">
       <!-- 购物车列表 -->
-      <view class="cart-list" v-if="showCartList">
+      <view class="cart-list" v-if="cartList">
         <!-- 优惠提示 -->
         <view class="tips">
           <text class="label">满减</text>
@@ -148,7 +149,8 @@ const gotoPayment = () => {
             <view class="goods">
               <!-- 选中状态 -->
               <text @tap="onChangeSelected(item)" class="checkbox" :class="{ checked: item.selected }"></text>
-              <navigator :url="`/pages/goods/goods?id=${item.id}`" hover-class="none" class="navigator">
+              <navigator :url="`/pages/goods/index?id=${item.listSkuData.productId}`" hover-class="none"
+                class="navigator">
                 <image mode="aspectFill" class="picture" :src="item?.listSkuData.pic"></image>
                 <view class="meta">
                   <view class="name ellipsis">{{ item?.listSkuData.name }}</view>
@@ -180,7 +182,7 @@ const gotoPayment = () => {
         </navigator>
       </view>
       <!-- 吸底工具栏 -->
-      <view v-if="showCartList" class="toolbar"
+      <view v-if="cartList" class="toolbar"
         :style="{ paddingBottom: safeAreaInsetBottom ? safeAreaInsets?.bottom + 'px' : 0 }">
         <text @tap="onChangeSelectedAll" class="all" :class="{ checked: isSelectedAll }">全选</text>
         <text class="text">合计:</text>
@@ -200,7 +202,7 @@ const gotoPayment = () => {
       </navigator>
     </view>
     <!-- 猜你喜欢 -->
-    <XtxGuess ref="guessRef" />
+    <Guess ref="guessRef" />
     <!-- 底部占位空盒子 -->
     <view class="toolbar-height"></view>
   </scroll-view>

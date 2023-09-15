@@ -77,7 +77,38 @@
 		{
 			"path": "pages/detail/index",
 			"style": {
+				"navigationStyle": "custom",
 				"navigationBarTitleText": "订单详情"
+			}
+		},
+		{
+			"path": "pages/payment/index",
+			"style": {
+				"navigationBarTitleText": "payment"
+			}
+		},
+		{
+			"path": "pages/orderList/index",
+			"style": {
+				"navigationBarTitleText": "订单"
+			}
+		},
+		{
+			"path": "pages/seacher/index",
+			"style": {
+				"navigationBarTitleText": "搜索"
+			}
+		},
+		{
+			"path": "pages/productList/index",
+			"style": {
+				"navigationBarTitleText": "商品列表"
+			}
+		},
+		{
+			"path": "pages/returnApply/index",
+			"style": {
+				"navigationBarTitleText": "退货申请"
 			}
 		}
 	],

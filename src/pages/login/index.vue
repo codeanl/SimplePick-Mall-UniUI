@@ -59,7 +59,7 @@ const onSubmit = async () => {
 <template>
   <view class="viewport">
     <view class="logo">
-      <image src="https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/logo_icon.png"></image>
+      <image src="http://rz9o6lxu1.hd-bkt.clouddn.com/1693992736"></image>
     </view>
     <view class="login">
       <!-- 网页端表单登录 -->
@@ -83,11 +83,11 @@ const onSubmit = async () => {
         <view class="options">
           <!-- 通用模拟登录 -->
           <button @tap="onGetphonenumberSimple">
-            <text class="icon icon-phone">模拟快捷登录</text>
+            <text class="icon icon-phone">快捷登录</text>
           </button>
         </view>
       </view>
-      <view class="tips">登录/注册即视为你同意《服务条款》和《小兔鲜儿隐私协议》</view>
+      <view class="tips">登录/注册即视为你同意《服务条款》和《隐私协议》</view>
     </view>
   </view>
 </template>

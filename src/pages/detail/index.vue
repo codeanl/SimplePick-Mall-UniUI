@@ -1,33 +1,139 @@
 <script setup lang="ts">
 import { useGuessList } from '@/composables'
 import { ref } from 'vue'
-
+import { onLoad } from '@dcloudio/uni-app'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 // 猜你喜欢
 const { guessRef, onScrolltolower } = useGuessList()
 // 弹出层组件
 const popup = ref<UniHelper.UniPopupInstance>()
-// 取消原因列表
-const reasonList = ref([
-  '商品无货',
-  '不想要了',
-  '商品信息填错了',
-  '地址信息填写错误',
-  '商品降价',
-  '其它',
-])
+const popup1 = ref<UniHelper.UniPopupInstance>()
+
 // 订单取消原因
-const reason = ref('')
+let reason = ref('')
 // 复制内容
 const onCopy = (id: string) => {
   // 设置系统剪贴板的内容
   uni.setClipboardData({ data: id })
 }
+
+import { orderInfo, updateOrder } from '@/services/order'
+import { listreturnReason, addreturnApply } from '@/services/return'
+
+onLoad(() => {
+  getData()
+})
 // 获取页面参数
 const query = defineProps<{
-  id: string
+  id: number
 }>()
+const order = ref<any>()
+const reasonList = ref<any>()
+let idd = parseInt(query.id)
+const getData = async () => {
+  const res = await orderInfo({ id: idd })
+  if (res.code === 200) {
+    order.value = res.data
+  }
+  const res1 = await listreturnReason({})
+  if (res1.code === 200) {
+    reasonList.value = res1.data
+  }
+}
+
+let getCurrentDateTime = () => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，需要加 1，并补零
+  const day = String(now.getDate()).padStart(2, '0'); // 补零
+  const hours = String(now.getHours()).padStart(2, '0'); // 补零
+  const minutes = String(now.getMinutes()).padStart(2, '0'); // 补零
+  const seconds = String(now.getSeconds()).padStart(2, '0'); // 补零
+  const dateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  return dateTime;
+}
+// 订单支付
+const onOrderPay = async () => {
+  const currentDateTime = getCurrentDateTime();
+  let res = await updateOrder({
+    id: idd,
+    status: "1",
+    paymentTime: currentDateTime,
+  })
+  if (res.code == 200) {
+    // 关闭当前页，再跳转支付结果页
+    uni.redirectTo({ url: `/pages/payment/index?id=${query.id}` })
+  }
+}
+
+
+const onCancel = async () => {
+  let res = await updateOrder({
+    id: idd,
+    status: "5",
+  })
+  if (res.code == 200) {
+    uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
+  }
+}
+
+
+const onConfirm = async () => {
+  const currentDateTime = getCurrentDateTime();
+  // 二次确认弹窗
+  uni.showModal({
+    content: '为保障您的权益，请收到货并确认无误后，再确认收货',
+    confirmColor: '#27BA9B',
+    success: async (success) => {
+      if (success.confirm) {
+        let res = await updateOrder({
+          id: idd,
+          status: "3",
+          receiveTime: currentDateTime
+        })
+        if (res.code == 200) {
+          uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
+        }
+      }
+    },
+  })
+}
+
+const onComment = async () => {
+  const currentDateTime = getCurrentDateTime();
+  let res = await updateOrder({
+    id: idd,
+    status: "4",
+    commentTime: currentDateTime
+  })
+  if (res.code == 200) {
+    uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
+    uni.showToast({ icon: 'success', title: '评论完成' })
+  }
+}
+
+import { useMemberStore } from '@/stores'
+const memberStore = useMemberStore()
+
+let onOrderCancel = async () => {
+  console.log(returnReason.value.id);
+  // await addreturnApply({
+  //   userID: memberStore.profile.info.id,
+  //   orderID: 1,
+  //   returnReasonID: 1,
+  //   status: 1,
+  //   description: 1,
+  //   proofPics: 1,
+  //   returnAmount: 1,
+  // })
+}
+
+let returnReason = ref<any>()
+let ddd = (item: any) => {
+  reason.value = item
+  returnReason.value = item
+}
 </script>
 
 <template>
@@ -45,81 +151,53 @@ const query = defineProps<{
       <!-- 订单状态 -->
       <view class="overview" :style="{ paddingTop: safeAreaInsets!.top + 20 + 'px' }">
         <!-- 待付款状态:展示去支付按钮和倒计时 -->
-        <template v-if="true">
+        <template v-if="order.orderInfo.status == '0'">
           <view class="status icon-clock">等待付款</view>
           <view class="tips">
-            <text class="money">应付金额: ¥ 99.00</text>
-            <text class="time">支付剩余</text>
-            00 时 29 分 59 秒
+            <text class="money">应付金额: {{ order.orderInfo.payAmount }} 元</text>
           </view>
-          <view class="button">去支付</view>
         </template>
-        <!-- 其他订单状态:展示再次购买按钮 -->
         <template v-else>
           <!-- 订单状态文字 -->
-          <view class="status"> 待付款 </view>
-          <view class="button-group">
-            <navigator class="button" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
-              再次购买
-            </navigator>
-            <!-- 待发货状态：模拟发货,开发期间使用,用于修改订单状态为已发货 -->
-            <view v-if="false" class="button"> 模拟发货 </view>
-          </view>
+          <view class="status" v-if="order.orderInfo.status == '1'"> 待发货 </view>
+          <view class="status" v-if="order.orderInfo.status == '2'"> 已发货 </view>
+          <view class="status" v-if="order.orderInfo.status == '4'"> 订单完成 </view>
+          <view class="status" v-if="order.orderInfo.status == '5'"> 订单无效 </view>
         </template>
-      </view>
-      <!-- 配送状态 -->
-      <view class="shipment">
-        <!-- 订单物流信息 -->
-        <view v-for="item in 1" :key="item" class="item">
-          <view class="message">
-            您已在广州市天河区黑马程序员完成取件，感谢使用菜鸟驿站，期待再次为您服务。
-          </view>
-          <view class="date"> 2023-04-14 13:14:20 </view>
-        </view>
-        <!-- 用户收货地址 -->
-        <view class="locate">
-          <view class="user"> 张三 13333333333 </view>
-          <view class="address"> 广东省 广州市 天河区 黑马程序员 </view>
-        </view>
       </view>
 
       <!-- 商品信息 -->
       <view class="goods">
         <view class="item">
-          <navigator class="navigator" v-for="item in 2" :key="item" :url="`/pages/goods/goods?id=${item}`"
-            hover-class="none">
-            <image class="cover" src="https://yanxuan-item.nosdn.127.net/c07edde1047fa1bd0b795bed136c2bb2.jpg"></image>
+          <navigator class="navigator" v-for="item in order?.skuList" :key="item.id"
+            :url="`/pages/goods/goods?id=${item.spuId}`" hover-class="none">
+            <image class="cover" :src="item.pic"></image>
             <view class="meta">
-              <view class="name ellipsis">ins风小碎花泡泡袖衬110-160cm</view>
-              <view class="type">藏青小花， 130</view>
+              <view class="name ellipsis">{{ item.name }}</view>
+              <view class="type">{{ item.tag }}</view>
               <view class="price">
                 <view class="actual">
                   <text class="symbol">¥</text>
-                  <text>99.00</text>
+                  <text>{{ item.price }}</text>
                 </view>
               </view>
-              <view class="quantity">x1</view>
+              <view class="quantity">x{{ item.count }}</view>
             </view>
           </navigator>
-          <!-- 待评价状态:展示按钮 -->
-          <view class="action" v-if="true">
-            <view class="button primary">申请售后</view>
-            <navigator url="" class="button"> 去评价 </navigator>
-          </view>
         </view>
         <!-- 合计 -->
         <view class="total">
           <view class="row">
             <view class="text">商品总价: </view>
-            <view class="symbol">99.00</view>
+            <view class="symbol">{{ order?.orderInfo.payAmount }}</view>
           </view>
           <view class="row">
             <view class="text">运费: </view>
-            <view class="symbol">10.00</view>
+            <view class="symbol">0</view>
           </view>
           <view class="row">
             <view class="text">应付金额: </view>
-            <view class="symbol primary">109.00</view>
+            <view class="symbol">{{ order?.orderInfo.payAmount }}</view>
           </view>
         </view>
       </view>
@@ -129,34 +207,47 @@ const query = defineProps<{
         <view class="title">订单信息</view>
         <view class="row">
           <view class="item">
-            订单编号: {{ query.id }} <text class="copy" @tap="onCopy(query.id)">复制</text>
+            订单编号: {{ order?.orderInfo.orderSn }} <text class="copy" @tap="onCopy(order?.orderInfo.orderSn)">复制</text>
           </view>
-          <view class="item">下单时间: 2023-04-14 13:14:20</view>
+          <view class="item">下单时间:{{ order?.orderInfo.createTime }}</view>
         </view>
       </view>
 
-      <!-- 猜你喜欢 -->
-      <XtxGuess ref="guessRef" />
+      <!-- 订单信息 -->
+      <view class="detail">
+        <view class="title">自提点信息</view>
+        <view class="row">
+          <view class="item">名称:{{ order?.placeInfo.name }}</view>
+          <view class="item">详细地址:{{ order?.placeInfo.place }}</view>
+          <view class="item">联系电话:{{ order?.placeInfo.phone }}</view>
+        </view>
+      </view>
+
 
       <!-- 底部操作栏 -->
       <view class="toolbar-height" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }"></view>
       <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
         <!-- 待付款状态:展示支付按钮 -->
-        <template v-if="true">
-          <view class="button primary"> 去支付 </view>
-          <view class="button" @tap="popup?.open?.()"> 取消订单 </view>
+        <template v-if="order.orderInfo.status == '0'">
+          <view class="button primary" @tap="onOrderPay"> 去支付 </view>
+          <view class="button" @tap="onCancel"> 取消订单 </view>
         </template>
-        <!-- 其他订单状态:按需展示按钮 -->
-        <template v-else>
-          <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
+        <template v-if="order.orderInfo.status == '2'">
+          <navigator v-if="order.orderInfo.status == '2'" class="button secondary"
+            :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
             再次购买
           </navigator>
-          <!-- 待收货状态: 展示确认收货 -->
-          <view class="button primary"> 确认收货 </view>
-          <!-- 待评价状态: 展示去评价 -->
-          <view class="button"> 去评价 </view>
-          <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
-          <view class="button delete"> 删除订单 </view>
+          <view class="button primary" v-if="order.orderInfo.status == '2'" @tap="onConfirm"> 确认收货 </view>
+        </template>
+        <template v-if="order.orderInfo.status == '3'">
+          <view class="button" @tap="onComment"> 去评价 </view>
+          <!-- <view class="button primary" @tap="popup1?.open?.()">申请售后</view> -->
+          <navigator class="button primary" :url="`/pages/returnApply/index?id=${query.id}`" hover-class="none">
+            申请售后
+          </navigator>
+        </template>
+        <template v-if="order.orderInfo.status == '4'">
+          <view class="button primary">申请售后</view>
         </template>
       </view>
     </template>
@@ -179,6 +270,23 @@ const query = defineProps<{
       <view class="footer">
         <view class="button" @tap="popup?.close?.()">取消</view>
         <view class="button primary">确认</view>
+      </view>
+    </view>
+  </uni-popup>
+  <!-- 取消订单弹窗 -->
+  <uni-popup ref="popup1" type="bottom" background-color="#fff">
+    <view class="popup-root">
+      <view class="title">订单取消</view>
+      <view class="description">
+        <view class="tips">请选择取消订单的原因：</view>
+        <view class="cell" v-for="item in reasonList" :key="item" @click="ddd(item)">
+          <text class="text">{{ item.name }}</text>
+          <text class="icon" :class="{ checked: item === reason }"></text>
+        </view>
+      </view>
+      <view class="footer">
+        <view class="button" @tap="popup1?.close?.()">取消</view>
+        <view class="button primary" @tap="popup1?.close?.(), onOrderCancel()">确认</view>
       </view>
     </view>
   </uni-popup>

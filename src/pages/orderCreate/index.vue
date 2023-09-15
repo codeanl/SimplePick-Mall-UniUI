@@ -2,7 +2,9 @@
 import { computed, ref, onMounted } from 'vue'
 import { onShow, onLoad } from '@dcloudio/uni-app'
 import { placeList } from '@/services/home'
+import { deleteCart } from '@/services/cart'
 import { addOrder } from '@/services/order'
+import { listplace } from '@/services/place'
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
 // 订单备注
@@ -34,7 +36,6 @@ onLoad(() => {
     addPri += skus.value[index].price * skus.value[index].count
   }
   getMemberCartData()
-
 })
 
 import { useMemberStore } from '@/stores'
@@ -42,11 +43,14 @@ import { useMemberStore } from '@/stores'
 const memberStore = useMemberStore()
 const PlaceList = ref<any>()
 const getMemberCartData = async () => {
-  const res = await placeList()
+  const res = await listplace({})
   if (res.code === 200) {
     PlaceList.value = res.data
   }
 }
+
+
+
 
 let generateOrderNumber = () => {
   const prefix = 'ORD'; // 订单号前缀
@@ -75,11 +79,36 @@ let getCurrentDateTime = () => {
 
 // 提交订单
 const onOrderSubmit = async () => {
-  const orderNumber = generateOrderNumber();
-  const currentDateTime = getCurrentDateTime();
+  //校验
+  if (userName.value === '' || userPhone.value === '') {
+    uni.showToast({
+      title: '请填写完整信息',
+      icon: 'none'
+    });
+    return;
+  }
+  // 校验手机号格式
+  const phoneRegex = /^1[0-9]{10}$/;
+  if (!phoneRegex.test(userPhone.value)) {
+    uni.showToast({
+      title: '请填写有效手机号',
+      icon: 'none'
+    });
+    return;
+  }
+  if (!place.value) {
+    uni.showToast({
+      title: '请选择自提点',
+      icon: 'none'
+    });
+    return;
+  }
   //
+  const orderNumber = generateOrderNumber();
   let skuIDs: any = []
-  for (let index = 0; index < skus.value.length; index++) {
+  let ids = ref<any>([])
+  for (let index = 0; index < skus?.value.length; index++) {
+    ids.value.push(parseInt(skus.value[index].id))
     skuIDs.push(
       {
         skuID: skus.value[index].skuID as number,
@@ -87,9 +116,10 @@ const onOrderSubmit = async () => {
       }
     )
   }
+
   const res = await addOrder({
-    memberId: memberStore.profile.info.id,
-    placeId: 1,        //
+    memberId: memberStore?.profile.info.id,
+    placeId: place!.value.id,        //
     couponId: 0,        //
     orderSn: orderNumber,
     memberUserName: memberStore.profile.info.nickname,
@@ -103,16 +133,36 @@ const onOrderSubmit = async () => {
     receiverName: userName.value,
     receiverPhone: userPhone.value,
     note: buyerMessage.value,
-    paymentTime: currentDateTime,
     skus: skuIDs,
   })
   if (res.code == 200) {
-    uni.redirectTo({ url: `/pages/detail/index?id=${res.data.orderID}` })
-    console.log(res.data.orderID);
+    uni.redirectTo({ url: `/pages/detail/index?id=${res.data.orderID as number}` })
+    console.log(ids.value);
+    await deleteCart({ ids: ids.value })
   }
 }
-</script>
 
+const popup = ref<UniHelper.UniPopupInstance>()
+// 取消原因列表
+const reasonList = ref([
+  '商品无货',
+  '不想要了',
+  '商品信息填错了',
+  '地址信息填写错误',
+  '商品降价',
+  '其它',
+])
+// 订单取消原因
+let reason = ref('')
+
+let isture = ref(false)
+let place = ref<any>()
+let ddd = (item: any) => {
+  reason.value = item
+  place.value = item
+  isture.value = true
+}
+</script>
 <template>
   <!-- 收货地址 -->
   <view>
@@ -154,6 +204,11 @@ const onOrderSubmit = async () => {
         <text class="text">联系电话</text>
         <input class="input" :cursor-spacing="30" placeholder="请填写联系电话" v-model="userPhone" />
       </view>
+      <view class="item">
+        <text class="text">自提点</text>
+        <!-- <view @tap="popup?.open?.()">{{ isture ? place.value.name : '请选择' }} </view> -->
+        <view @tap="popup?.open?.()">{{ place ? place.name : "请填写自提点" }} </view>
+      </view>
     </view>
 
     <!-- 支付金额 -->
@@ -174,9 +229,111 @@ const onOrderSubmit = async () => {
       提交订单
     </view>
   </view>
+
+  <uni-popup ref="popup" type="bottom" background-color="#fff">
+    <view class="popup-root">
+      <view class="title">自提点</view>
+      <view class="description">
+        <view class="tips">请选自提点：</view>
+        <!-- @tap="reason = item" -->
+        <view class="cell" v-for="item in PlaceList" :key="item" @click="ddd(item)">
+          <text class="text">{{ item.name }}</text>
+          <text class="icon" :class="{ checked: item === reason }"></text>
+        </view>
+      </view>
+      <view class="footer">
+        <!-- <view class="button" @tap="popup?.close?.()">取消</view> -->
+        <view class="button primary" @tap="popup?.close?.()">确认</view>
+      </view>
+    </view>
+  </uni-popup>
 </template>
 
 <style lang="scss">
+//
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 200rpx;
+  height: 72rpx;
+  margin-left: 15rpx;
+  font-size: 26rpx;
+  border-radius: 72rpx;
+  border: 1rpx solid #ccc;
+  color: #444;
+}
+
+.popup-root {
+  padding: 30rpx 30rpx 0;
+  border-radius: 10rpx 10rpx 0 0;
+  overflow: hidden;
+
+  .title {
+    font-size: 30rpx;
+    text-align: center;
+    margin-bottom: 30rpx;
+  }
+
+  .description {
+    font-size: 28rpx;
+    padding: 0 20rpx;
+
+    .tips {
+      color: #444;
+      margin-bottom: 12rpx;
+    }
+
+    .cell {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15rpx 0;
+      color: #666;
+    }
+
+    .icon::before {
+      content: '\e6cd';
+      font-family: 'erabbit' !important;
+      font-size: 38rpx;
+      color: #999;
+    }
+
+    .icon.checked::before {
+      content: '\e6cc';
+      font-size: 38rpx;
+      color: #27ba9b;
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 30rpx 0 40rpx;
+    font-size: 28rpx;
+    color: #444;
+
+    .button {
+      flex: 1;
+      height: 72rpx;
+      text-align: center;
+      line-height: 72rpx;
+      margin: 0 20rpx;
+      color: #444;
+      border-radius: 72rpx;
+      border: 1rpx solid #ccc;
+    }
+
+    .primary {
+      color: #fff;
+      background-color: #27ba9b;
+      border: none;
+    }
+  }
+}
+
+//
 page {
   display: flex;
   flex-direction: column;

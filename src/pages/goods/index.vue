@@ -122,6 +122,23 @@ const onAddCart = async (ev: SkuPopupEvent) => {
 const onBuyNow = (ev: SkuPopupEvent) => {
   console.log(ev._id, ev.buy_num);
   // uni.navigateTo({ url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}` })
+  let sku: any = []
+  sku.push(
+    {
+      id: ev._id,
+      count: ev.buy_num,
+      skuID: ev._id,
+      name: goods.value.productInfo.name,
+      pic: goods.value.productInfo.pic,
+      price: ev.price / 100,
+      tag: ev.sku_name_arr,
+      productId: goods.value.productInfo.id,
+    }
+  )
+  // 跳转到结算页
+  uni.navigateTo({
+    url: '/pages/orderCreate/index?sku=' + encodeURIComponent(JSON.stringify(sku)),
+  })
 }
 </script>
 
@@ -161,7 +178,7 @@ const onBuyNow = (ev: SkuPopupEvent) => {
       </view>
 
       <!-- 操作面板 -->
-      <view class="action">
+      <!-- <view class="action">
         <view class="item arrow">
           <text class="label">选择</text>
           <text class="text ellipsis"> 请选择商品规格 </text>
@@ -174,7 +191,7 @@ const onBuyNow = (ev: SkuPopupEvent) => {
           <text class="label">服务</text>
           <text class="text ellipsis"> 无忧退 快速退款 免费包邮 </text>
         </view>
-      </view>
+      </view> -->
 
       <!-- 商品详情 -->
       <view class="detail panel">
@@ -192,15 +209,7 @@ const onBuyNow = (ev: SkuPopupEvent) => {
             </view>
           </view>
           <!-- 图片详情 -->
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/77590f0ad6019c15afde116458d1e1b4.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/dd64dc8f28bf1c16d3100a8cd5f17fea.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/d1c2928b0d617cc53e0658ae1331548f.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/229fe41a2d003d359cd3637925c672dc.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/1bef5a5e037ebc23c504ad133851f958.jpg"></image>
-
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/b32ca4101f0168408e697159c52d3fc3.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/dbbfdbab636c6802c1d7ff4a07de02c9.jpg"></image>
-          <image mode="widthFix" src="https://yanxuan-item.nosdn.127.net/567d8ed0970b283e9db7da73d80fa4e3.jpg"></image>
+          <image class="image" v-for="item in goods?.introduceImgUrl" :key="item" mode="widthFix" :src="item"></image>
         </view>
       </view>
     </view>

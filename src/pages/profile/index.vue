@@ -40,7 +40,6 @@ const onAvatarChange = () => {
     },
   })
   // #endif
-
   // #ifdef MP-WEIXIN
   // uni.chooseMedia 仅支持微信小程序端
   uni.chooseMedia({
@@ -57,34 +56,35 @@ const onAvatarChange = () => {
   })
   // #endif
 }
-
 // 文件上传-兼容小程序端、H5端、App端
 const uploadFile = (file: string) => {
-  // 文件上传
   uni.uploadFile({
-    url: '/member/profile/avatar',
+    url: '/api/upload',
     name: 'file',
     filePath: file,
-    success: (res) => {
-      if (res.code === 200) {
-        const avatar = JSON.parse(res.data).result.avatar
-        // 个人信息页数据更新
-        profile.value!.avatar = avatar
-        // Store头像更新
-        memberStore.profile!.avatar = avatar
-        uni.showToast({ icon: 'success', title: '更新成功' })
-      } else {
-        uni.showToast({ icon: 'error', title: '出现错误' })
-      }
+    success: (res: any) => {
+      updateAvatar(JSON.parse(res.data))
     },
   })
+}
+let updateAvatar = async (data: any) => {
+  memberStore.profile!.info.avatar = data.data
+  let res = await putMemberProfileAPI({
+    id: memberStore.profile.info.id,
+    avatar: data.data
+  })
+  if (res.code == 200) {
+    uni.showToast({ icon: 'success', title: '更新成功' })
+    profile.value.avatar = data.data
+  } else {
+    uni.showToast({ icon: 'error', title: '出现错误' })
+  }
 }
 
 // 修改性别
 const onGenderChange: UniHelper.RadioGroupOnChange = (ev) => {
   profile.value.gender = ev.detail.value
 }
-
 
 // 点击保存提交表单
 const onSubmit = async () => {
@@ -157,15 +157,7 @@ const onSubmit = async () => {
             </label>
           </radio-group>
         </view>
-        <!-- <view class="form-item">
-          <text class="label">生日</text>
-          <picker @change="onBirthdayChange" mode="date" class="picker" :value="profile?.birthday" start="1900-01-01"
-            :end="formatDate(new Date())">
-            <view v-if="profile?.birthday">{{ profile?.birthday }}</view>
-            <view class="placeholder" v-else>请选择日期</view>
-          </picker>
-        </view> -->
-        <!-- 只有微信小程序端内置了省市区数据 -->
+
         <!-- #ifdef MP-WEIXIN -->
         <!-- #endif -->
         <view class="form-item">

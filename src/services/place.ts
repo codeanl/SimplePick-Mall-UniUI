@@ -1,39 +1,39 @@
 import { http } from '@/utils/http'
 
-export const addOrder = (data: any) => {
+export const addplace = (data: any) => {
     return http<any[]>({
         method: 'POST',
-        url: '/api/order/add',
+        url: '/api/place/add',
         data: data,
     })
 }
 
-export const updateOrder = (data: any) => {
+export const updateplace = (data: any) => {
     return http<any[]>({
         method: 'POST',
-        url: '/api/order/update',
+        url: '/api/place/update',
         data: data,
     })
 }
-export const deleteOrder = (data: any) => {
+export const deleteplace = (data: any) => {
     return http<any[]>({
         method: 'POST',
-        url: '/api/order/delete',
+        url: '/api/place/delete',
         data: data,
     })
 }
-export const listOrder = (data: any) => {
+export const listplace = (data: any) => {
     return http<any[]>({
         method: 'POST',
-        url: '/api/order/list',
+        url: '/api/place/list',
         data: data,
     })
 }
 
-export const orderInfo = (data: any) => {
+export const placeInfo = (data: any) => {
     return http<any[]>({
         method: 'POST',
-        url: '/api/order/info',
+        url: '/api/place/info',
         data: data,
     })
 }

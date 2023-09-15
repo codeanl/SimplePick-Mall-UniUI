@@ -2,6 +2,28 @@
 import { getHomeGoodsGuessLikeAPI } from '@/services/home'
 import { onMounted, ref } from 'vue'
 
+// 获取页面参数
+const query = defineProps<{
+  id: number
+  name: string
+}>()
+// const guessList = ref<any[]>([])
+// const getHomeGoodsGuessLikeData = async () => {
+//   if (query.id) {
+//     const res = await getHomeGoodsGuessLikeAPI({ categoryId: query.id })
+//     guessList.value = res.data
+//   }
+//   if (query.name) {
+//     const res = await getHomeGoodsGuessLikeAPI({ name: query.name })
+//     guessList.value = res.data
+//     console.log(query.name);
+//   }
+// }
+// 组件挂载完毕
+// onMounted(() => {
+//   getHomeGoodsGuessLikeData()
+// })
+
 // 分页参数
 const pageParams: any = {
   current: 1,
@@ -11,42 +33,51 @@ const pageParams: any = {
 const guessList = ref<any[]>([])
 // 已结束标记
 const finish = ref(false)
-// 获取猜你喜欢数据
 const getHomeGoodsGuessLikeData = async () => {
   // 退出分页判断
   if (finish.value === true) {
     return uni.showToast({ icon: 'none', title: '没有更多数据~' })
   }
-  const res = await getHomeGoodsGuessLikeAPI(pageParams)
-  // 数组追加
-  guessList.value.push(...res.data)
-  if (pageParams.current < Math.ceil(res.total / pageParams.pageSize)) {
-    pageParams.current++
-  } else {
-    finish.value = true
+  if (query.id) {
+    pageParams['categoryId'] = parseInt(query.id);
+    console.log(pageParams);
+    const res = await getHomeGoodsGuessLikeAPI(pageParams)
+    // 数组追加
+    guessList.value.push(...res.data)
+    // 分页条件
+    if (pageParams.current < Math.ceil(res.total / pageParams.pageSize)) {
+      pageParams.current++
+    } else {
+      finish.value = true
+    }
+  }
+  if (query.name) {
+    pageParams['name'] = query.name
+    const res = await getHomeGoodsGuessLikeAPI(pageParams)
+    // 数组追加
+    guessList.value.push(...res.data)
+    // 分页条件
+    if (pageParams.current < Math.ceil(res.total / pageParams.pageSize)) {
+      // 页码累加
+      pageParams.current++
+    } else {
+      finish.value = true
+    }
   }
 }
-// 重置数据
-const resetData = () => {
-  pageParams.current = 1
-  guessList.value = []
-  finish.value = false
-}
-// 组件挂载完毕
 onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
-// 暴露方法
-defineExpose({
-  resetData,
-  getMore: getHomeGoodsGuessLikeData,
-})
+
+
 </script>
 
 <template>
-  <!-- 猜你喜欢 -->
   <view class="caption">
-    <text class="text">热门推荐</text>
+    <navigator class="search" url="/pages/seacher/index">
+      <text class="icon-search">搜索商品</text>
+      <text class="icon-scan"></text>
+    </navigator>
   </view>
   <view class="guess">
     <navigator class="guess-item" v-for="item in guessList" :key="item.id" :url="`/pages/goods/index?id=${item.id}`">
@@ -58,9 +89,6 @@ defineExpose({
       </view>
     </navigator>
   </view>
-  <view class="loading-text">
-    {{ finish ? '没有更多数据~' : '正在加载...' }}
-  </view>
 </template>
 
 <style lang="scss">
@@ -68,14 +96,44 @@ defineExpose({
   display: block;
 }
 
+page {
+  background-color: #dcdada;
+}
+
 /* 分类标题 */
 .caption {
   display: flex;
   justify-content: center;
   line-height: 1;
-  padding: 36rpx 0 40rpx;
+  padding: 16rpx 0 40rpx;
   font-size: 32rpx;
   color: #262626;
+
+
+  .search {
+    width: 90%;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10rpx 0 26rpx;
+    height: 64rpx;
+    margin: 0rpx 10rpx;
+    color: #242424;
+    font-size: 28rpx;
+    border-radius: 32rpx;
+
+    .icon-search {
+      &::before {
+        margin-right: 10rpx;
+      }
+    }
+
+    .icon-scan {
+      font-size: 30rpx;
+      padding: 15rpx;
+    }
+  }
 
   .text {
     display: flex;

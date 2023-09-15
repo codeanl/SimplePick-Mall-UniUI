@@ -8,13 +8,13 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
     <!-- logo文字 -->
     <view class="logo">
       <!-- <image class="logo-image" src="@/static/images/logo.png"></image> -->
-      <text class="logo-text">随时随地 简单自提</text>
+      <text class="logo-text">易提商城V1.0</text>
     </view>
     <!-- 搜索条 -->
-    <view class="search">
+    <navigator class="search" url="/pages/seacher/index">
       <text class="icon-search">搜索商品</text>
       <text class="icon-scan"></text>
-    </view>
+    </navigator>
   </view>
 </template>
 
@@ -22,7 +22,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 /* 自定义导航条 */
 .navbar {
   //background-image: url(@/static/images/navigator_bg.png);
-  background-color: #e78d6a;
+  background-color: #e89b71;
   background-size: cover;
   position: relative;
   display: flex;
@@ -46,7 +46,6 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
       color: #fff;
       margin: 2rpx 0 0 20rpx;
       padding-left: 20rpx;
-      border-left: 1rpx solid #fff;
       font-size: 26rpx;
     }
   }

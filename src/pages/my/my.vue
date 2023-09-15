@@ -5,10 +5,11 @@ import { useMemberStore } from '@/stores'
 const { safeAreaInsets } = uni.getSystemInfoSync()
 // 订单选项
 const orderTypes = [
-  { type: '1', text: '待付款', icon: 'icon-currency' },
-  { type: '2', text: '待发货', icon: 'icon-gift' },
-  { type: '3', text: '待收货', icon: 'icon-check' },
-  { type: '4', text: '待评价', icon: 'icon-comment' },
+  { type: '100', name: '全部', icon: 'icon-currency' },
+  { type: '0', name: '待付款', icon: 'icon-currency' },
+  { type: '1', name: '待发货', icon: 'icon-gift' },
+  { type: '2', name: '待收货', icon: 'icon-check' },
+  { type: '3', name: '待评价', icon: 'icon-comment' },
 ]
 // 获取会员信息
 const memberStore = useMemberStore()
@@ -58,25 +59,17 @@ const memberStore = useMemberStore()
     <view class="orders">
       <view class="title">
         我的订单
-        <navigator class="navigator" url="/pagesOrder/list/list?type=0" hover-class="none">
+        <navigator class="navigator" url="/pages/orderList/index?status=100" hover-class="none">
           查看全部订单<text class="icon-right"></text>
         </navigator>
       </view>
       <view class="section">
         <!-- 订单 -->
         <navigator v-for="item in orderTypes" :key="item.type" :class="item.icon"
-          :url="`/pagesOrder/list/list?type=${item.type}`" class="navigator" hover-class="none">
-          {{ item.text }}
+          :url="`/pages/orderList/index?status=${item.type}`" class="navigator" hover-class="none">
+          {{ item.name }}
         </navigator>
-        <!-- 客服 -->
-        <!-- #ifdef MP-WEIXIN -->
-        <button class="contact icon-handset" open-type="contact">售后</button>
-        <!-- #endif -->
       </view>
-    </view>
-    <!-- 猜你喜欢 -->
-    <view class="guess">
-      <!-- <XtxGuess ref="guessRef" /> -->
     </view>
   </scroll-view>
 </template>
@@ -85,14 +78,15 @@ const memberStore = useMemberStore()
 page {
   height: 100%;
   overflow: hidden;
-  background-color: #f7f7f8;
 }
 
 .viewport {
   height: 100%;
-  background-repeat: no-repeat;
-  background-image: url(https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/center_bg.png);
-  background-size: 100% auto;
+  //background-repeat: no-repeat;
+  //background-image: url(https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/center_bg.png);
+  //background-size: 100% auto;
+  background-color: #f3f3f3;
+  background-image: linear-gradient(#e89b71 0, #ff9545 180px, transparent 180px);
 }
 
 /* 用户信息 */
@@ -170,7 +164,7 @@ page {
   z-index: 99;
   padding: 30rpx;
   margin: 50rpx 20rpx 0;
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 10rpx;
   box-shadow: 0 4rpx 6rpx rgba(240, 240, 240, 0.6);
 

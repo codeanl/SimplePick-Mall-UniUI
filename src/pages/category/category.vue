@@ -60,7 +60,7 @@ const subCategoryList = computed(() => {
         <view class="panel" v-for="item in subCategoryList" :key="item.id">
           <view class="title">
             <text class="name">{{ item.name }}</text>
-            <navigator class="more" hover-class="none">全部</navigator>
+            <navigator class="more" hover-class="none" :url="`/pages/productList/index?id=${item.id}`">全部</navigator>
           </view>
           <view class="section">
             <navigator v-for="goods in item.productList" :key="goods.id" class="goods" hover-class="none"
