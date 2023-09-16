@@ -119,17 +119,6 @@ let fileList = ref()
 
 const selectFileNew = (res) => {
   console.log(res);
-  uploadFile(res)
-}
-const uploadFile = (file: string) => {
-  uni.uploadFile({
-    url: '/api/upload',
-    name: 'file',
-    filePath: file,
-    success: (res: any) => {
-      console.log(res.data);
-    },
-  })
 }
 
 </script>
