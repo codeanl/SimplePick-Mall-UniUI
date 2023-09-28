@@ -172,26 +172,38 @@ const onBuyNow = (ev: SkuPopupEvent) => {
         <view class="price">
           <text class="symbol">¥</text>
           <text class="number">{{ goods?.productInfo.price }}</text>
+          <text class="xiaoliang">已售 {{ goods?.productInfo.price }}</text>
         </view>
         <view class="name ellipsis">{{ goods?.productInfo.name }}</view>
         <view class="desc"> {{ goods?.productInfo.desc }} </view>
       </view>
 
       <!-- 操作面板 -->
-      <!-- <view class="action">
-        <view class="item arrow">
+      <view class="action">
+        <!-- <view class="item arrow">
           <text class="label">选择</text>
           <text class="text ellipsis"> 请选择商品规格 </text>
         </view>
         <view class="item arrow">
           <text class="label">送至</text>
           <text class="text ellipsis"> 请选择收获地址 </text>
-        </view>
+        </view> -->
         <view class="item arrow">
           <text class="label">服务</text>
           <text class="text ellipsis"> 无忧退 快速退款 免费包邮 </text>
         </view>
-      </view> -->
+      </view>
+
+      <!-- 商品详情 -->
+      <view class="merchant  ">
+        <image class="image" :src="goods?.merchantInfo.pic"></image>
+        <text class="info">
+          <text class="name">{{ goods?.merchantInfo.name }}</text>
+        </text>
+        <navigator class="button" url="/pages/login/index" open-type="navigate">
+          进店
+        </navigator>
+      </view>
 
       <!-- 商品详情 -->
       <view class="detail panel">
@@ -345,11 +357,20 @@ page {
       color: #fff;
       font-size: 34rpx;
       box-sizing: border-box;
-      background-color: #35c8a9;
+      //background-color: #35c8a9;
+      background-color: #e49364;
     }
 
     .number {
       font-size: 56rpx;
+    }
+
+    .xiaoliang {
+      float: right;
+      font-size: 26rpx;
+      margin-right: 20rpx;
+      margin-top: 20rpx;
+      color: #444;
     }
 
     .brand {
@@ -405,6 +426,41 @@ page {
       flex: 1;
       -webkit-line-clamp: 1;
     }
+  }
+}
+
+/* 商家详情 */
+.merchant {
+  margin: 20rpx 0;
+  background-color: #f4f1f1;
+  padding: 20rpx 20rpx 20rpx 20px;
+  display: flex;
+  align-items: center;
+
+  .image {
+    width: 140rpx;
+    height: 140rpx;
+    border-radius: 50%;
+  }
+
+  .info {
+    margin-left: 30rpx;
+
+    .name {
+      height: 72rpx;
+      font-size: 36rpx;
+      color: #444;
+    }
+  }
+
+  .button {
+    margin-left: 28rpx;
+    font-size: 40rpx;
+    color: #444;
+    border-radius: 72rpx;
+    width: 160rpx;
+    border: 1rpx solid #ccc;
+    text-align: center;
   }
 }
 

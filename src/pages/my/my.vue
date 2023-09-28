@@ -86,7 +86,9 @@ page {
   //background-image: url(https://pcapi-xiaotuxian-front-devtest.itheima.net/miniapp/images/center_bg.png);
   //background-size: 100% auto;
   background-color: #f3f3f3;
-  background-image: linear-gradient(#e89b71 0, #ff9545 180px, transparent 180px);
+  //background-image: linear-gradient(#e89b71 0, #ff9545 180px, transparent 180px);
+  background-image: linear-gradient(#a6e531 0, #a6e531 180px, transparent 180px);
+
 }
 
 /* 用户信息 */

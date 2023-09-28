@@ -25,6 +25,7 @@ onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
 
+
 </script>
 
 <template>
@@ -34,7 +35,18 @@ onMounted(() => {
       <text class="icon-scan"></text>
     </navigator>
   </view>
-  <view class="guess">
+  <view class="shaixuan">
+    <view>
+      <text>推荐</text>
+    </view>
+    <view>
+      <text>销量</text>
+    </view>
+    <view>
+      <text>价格</text>
+    </view>
+  </view>
+  <view class=" guess">
     <navigator class="guess-item" v-for="item in guessList" :key="item.id" :url="`/pages/goods/index?id=${item.id}`">
       <image class="image" mode="aspectFill" :src="item.pic"></image>
       <view class="name"> {{ item.name }} </view>
@@ -52,7 +64,21 @@ onMounted(() => {
 }
 
 page {
-  background-color: #dcdada;
+  background-color: #f0efef;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 30px;
+  /* 调整下拉菜单的位置 */
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+}
+
+.menu-item {
+  padding: 8px;
+  cursor: pointer;
 }
 
 /* 分类标题 */
@@ -60,10 +86,9 @@ page {
   display: flex;
   justify-content: center;
   line-height: 1;
-  padding: 16rpx 0 40rpx;
+  padding: 16rpx 0 20rpx 0rpx;
   font-size: 32rpx;
   color: #262626;
-
 
   .search {
     width: 90%;
@@ -73,7 +98,7 @@ page {
     justify-content: space-between;
     padding: 0 10rpx 0 26rpx;
     height: 64rpx;
-    margin: 0rpx 10rpx;
+    margin: 0rpx 5rpx;
     color: #242424;
     font-size: 28rpx;
     border-radius: 32rpx;
@@ -105,6 +130,17 @@ page {
       background-size: contain;
       margin: 0 10rpx;
     }
+  }
+}
+
+//筛选
+.shaixuan {
+  display: flex;
+
+  view {
+    margin: 20rpx 35rpx;
+    font-size: 32rpx;
+    color: #5c5c5c;
   }
 }
 

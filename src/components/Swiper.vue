@@ -36,6 +36,8 @@ defineProps<{
 :host {
   display: block;
   height: 280rpx;
+  background-image: linear-gradient(#a6e531 0, #a6e531 100rpx, transparent 100rpx);
+
 }
 
 /* 轮播图 */
@@ -44,7 +46,11 @@ defineProps<{
   position: relative;
   overflow: hidden;
   transform: translateY(0);
-  background-color: #efefef;
+  background-color: #e7e4e4;
+  width: 97%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 20rpx;
 
   .indicator {
     position: absolute;

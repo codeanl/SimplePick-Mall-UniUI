@@ -2,7 +2,6 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useMemberStore } from '@/stores'
-import { orderStateList } from '@/services/constants'
 // 获取会员Store
 const memberStore = useMemberStore()
 // 获取屏幕边界到安全区域距离
@@ -30,7 +29,8 @@ onLoad(() => {
 })
 const order = ref<any>()
 const getData = async (status: number) => {
-  if (parseInt(query.status) < 100) {
+  order.value = []
+  if (status < 100) {
     const res = await listOrder({ status: status, userID: memberStore.profile.info.id, })
     if (res.code === 200) {
       order.value = res.data
@@ -50,7 +50,6 @@ let handleTabClick = (index: any, id: any) => {
   orderTabs.value.forEach((item, i) => {
     item.isRender = i === index;
   });
-  order.value = []
   getData(id.toString())
 }
 let getCurrentDateTime = () => {
@@ -137,7 +136,7 @@ const onComment = async (id: number) => {
     <!-- tabs -->
     <view class="tabs">
       <text class="item" v-for="(item, index) in orderTabs" :key="item.title"
-        @click="handleTabClick(index, item.orderState)">
+        @tap="handleTabClick(index, item.orderState)">
         {{ item.title }}
       </text>
       <!-- 游标 -->
@@ -152,9 +151,12 @@ const onComment = async (id: number) => {
           <view class="card" v-for="item in order" :key="item">
             <!-- 订单信息 -->
             <view class="status">
-              <text class="date">{{ item.createTime }}</text>
+              <navigator class="dianpu" url="/pages/login/index">
+                <text class=" label">店铺</text>
+                <text class="name">{{ item?.merchantInfo.name }} ></text>
+              </navigator>
+              <!-- <text class="date">{{ item.createTime }}</text> -->
               <!-- 订单状态文字 -->
-              <text>{{ orderStateList[item.status].text }}</text>
               <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
               <text class="icon-delete"></text>
             </view>
@@ -274,6 +276,25 @@ page {
     font-size: 28rpx;
     color: #999;
     margin-bottom: 15rpx;
+
+    .dianpu {
+      margin-bottom: 10rpx;
+
+      .name {
+        height: 72rpx;
+        font-size: 28rpx;
+        color: #444;
+      }
+
+      .label {
+        color: #fff;
+        padding: 7rpx 15rpx 5rpx;
+        border-radius: 4rpx;
+        font-size: 24rpx;
+        background-color: #dc9c4f;
+        margin-right: 10rpx;
+      }
+    }
 
     .date {
       color: #666;

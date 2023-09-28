@@ -78,7 +78,7 @@ const onChangeSelectedAll = () => {
     item.selected = _isSelectedAll
   })
   // 后端数据更新
-  putMemberCartSelectedAPI({ selected: _isSelectedAll })
+  // putMemberCartSelectedAPI({ selected: _isSelectedAll })
 }
 
 // 计算选中单品列表
@@ -128,6 +128,7 @@ const gotoPayment = () => {
     url: '/pages/orderCreate/index?sku=' + encodeURIComponent(JSON.stringify(sku)),
   })
 }
+
 </script>
 
 <template>
@@ -139,7 +140,7 @@ const gotoPayment = () => {
         <!-- 优惠提示 -->
         <view class="tips">
           <text class="label">满减</text>
-          <text class="desc">满1件, 即可享受9折优惠</text>
+          <text class="desc">满1件, 即可享受包邮免费送</text>
         </view>
         <!-- 滑动操作分区 -->
         <uni-swipe-action>
@@ -147,17 +148,25 @@ const gotoPayment = () => {
           <uni-swipe-action-item v-for="item in cartList" :key="item.skuId" class="cart-swipe">
             <!-- 商品信息 -->
             <view class="goods">
+              <!--  -->
               <!-- 选中状态 -->
               <text @tap="onChangeSelected(item)" class="checkbox" :class="{ checked: item.selected }"></text>
-              <navigator :url="`/pages/goods/index?id=${item.listSkuData.productId}`" hover-class="none"
-                class="navigator">
-                <image mode="aspectFill" class="picture" :src="item?.listSkuData.pic"></image>
-                <view class="meta">
-                  <view class="name ellipsis">{{ item?.listSkuData.name }}</view>
-                  <view class="attrsText ellipsis">{{ item?.listSkuData.tag }}</view>
-                  <view class="price">{{ item?.listSkuData.price }}</view>
-                </view>
-              </navigator>
+              <view class="navigator">
+                <navigator class="dianpu">
+                  <text class="label">店铺</text>
+                  <text class="name">{{ item?.merchantData.name }}</text>
+                </navigator>
+                <navigator :url="`/pages/goods/index?id=${item.listSkuData.productId}`" hover-class="none"
+                  class="navigator1">
+                  <image mode="aspectFill" class="picture" :src="item?.listSkuData.pic"></image>
+                  <view class="meta">
+                    <view class="name ellipsis">{{ item?.listSkuData.name }}</view>
+                    <view class="attrsText ellipsis">{{ item?.listSkuData.tag }}</view>
+                    <view class="price">{{ item?.listSkuData.price }}</view>
+                  </view>
+                </navigator>
+              </view>
+
               <!-- 商品数量 -->
               <view class="count">
                 <vk-data-input-number-box v-model="item.count" :min="1" :max="item.stock" :index="item.skuId"
@@ -175,11 +184,8 @@ const gotoPayment = () => {
       </view>
       <!-- 购物车空状态 -->
       <view class="cart-blank" v-else>
-        <image src="/static/images/blank_cart.png" class="image" />
+        <image src="/static/images/cart.png" class="image" />
         <text class="text">购物车还是空的，快来挑选好货吧</text>
-        <navigator url="/pages/index/index" hover-class="none">
-          <button class="button">去首页看看</button>
-        </navigator>
       </view>
       <!-- 吸底工具栏 -->
       <view v-if="cartList" class="toolbar"
@@ -254,7 +260,26 @@ const gotoPayment = () => {
     background-color: #fff;
     position: relative;
 
-    .navigator {
+    .dianpu {
+      margin-bottom: 10rpx;
+
+      .name {
+        height: 72rpx;
+        font-size: 28rpx;
+        color: #444;
+      }
+
+      .label {
+        color: #fff;
+        padding: 7rpx 15rpx 5rpx;
+        border-radius: 4rpx;
+        font-size: 24rpx;
+        background-color: #dc9c4f;
+        margin-right: 10rpx;
+      }
+    }
+
+    .navigator1 {
       display: flex;
     }
 

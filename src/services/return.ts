@@ -37,3 +37,11 @@ export const listreturnReason = (data: any) => {
         data: data,
     })
 }
+
+export const returnApplyInfo = (data: any) => {
+    return http<any[]>({
+        method: 'POST',
+        url: '/api/returnApply/info',
+        data: data,
+    })
+}

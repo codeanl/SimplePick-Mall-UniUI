@@ -41,12 +41,6 @@
         <uni-file-picker limit="1"></uni-file-picker>
       </view>
     </uni-section> -->
-    <uni-section>
-      <view>
-        <uni-file-picker ref="files" v-model="fileList" :auto-upload="false" @select="selectFileNew">
-        </uni-file-picker>
-      </view>
-    </uni-section>
   </view>
   <!--  -->
   <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
@@ -88,7 +82,7 @@ const query = defineProps<{
 }>()
 // 获取屏幕边界到安全区域距离
 const { safeAreaInsets } = uni.getSystemInfoSync()
-import { listreturnReason, addreturnApply } from '@/services/return'
+import { listreturnReason, addreturnApply, returnApplyInfo } from '@/services/return'
 const reasonList = ref<any>()
 const order = ref<any>()
 const getData = async () => {
@@ -100,6 +94,7 @@ const getData = async () => {
   if (res1.code === 200) {
     order.value = res1.data
   }
+
 }
 
 let place = ref<any>()
@@ -111,15 +106,25 @@ let ddd = (item: any) => {
 let dddd = () => {
   console.log(place);
 }
-let limit11 = () => {
-  console.log(123123);
+
+import { useMemberStore } from '@/stores'
+const memberStore = useMemberStore()
+
+let limit11 = async () => {
+  let res = await addreturnApply({
+    userID: memberStore?.profile.info.id,
+    orderID: order.value.orderInfo.id,
+    returnReasonID: place.value.id,
+    status: '0',
+    description: description.value,
+    proofPics: '11',
+    returnAmount: order.value.orderInfo.totalAmount,
+  })
+  if (res.code == 200) {
+    uni.redirectTo({ url: `/pages/detail/index?id=${parseInt(query.id)}` })
+  }
 }
 
-let fileList = ref()
-
-const selectFileNew = (res) => {
-  console.log(res);
-}
 
 </script>
 

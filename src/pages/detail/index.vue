@@ -19,7 +19,7 @@ const onCopy = (id: string) => {
 }
 
 import { orderInfo, updateOrder } from '@/services/order'
-import { listreturnReason, addreturnApply } from '@/services/return'
+import { listreturnReason, addreturnApply, returnApplyInfo } from '@/services/return'
 
 onLoad(() => {
   getData()
@@ -30,6 +30,7 @@ const query = defineProps<{
 }>()
 const order = ref<any>()
 const reasonList = ref<any>()
+const returnApply = ref<any>()
 let idd = parseInt(query.id)
 const getData = async () => {
   const res = await orderInfo({ id: idd })
@@ -39,6 +40,10 @@ const getData = async () => {
   const res1 = await listreturnReason({})
   if (res1.code === 200) {
     reasonList.value = res1.data
+  }
+  const res2 = await returnApplyInfo({ orderID: parseInt(query.id) })
+  if (res2.code === 200) {
+    returnApply.value = res2.data
   }
 }
 
@@ -169,6 +174,10 @@ let ddd = (item: any) => {
       <!-- 商品信息 -->
       <view class="goods">
         <view class="item">
+          <navigator class="dianpu" url="/pages/login/index">
+            <text class=" label">店铺</text>
+            <text class="name">{{ order?.merchantInfo.name }} ></text>
+          </navigator>
           <navigator class="navigator" v-for="item in order?.skuList" :key="item.id"
             :url="`/pages/goods/goods?id=${item.spuId}`" hover-class="none">
             <image class="cover" :src="item.pic"></image>
@@ -241,13 +250,32 @@ let ddd = (item: any) => {
         </template>
         <template v-if="order.orderInfo.status == '3'">
           <view class="button" @tap="onComment"> 去评价 </view>
-          <!-- <view class="button primary" @tap="popup1?.open?.()">申请售后</view> -->
-          <navigator class="button primary" :url="`/pages/returnApply/index?id=${query.id}`" hover-class="none">
-            申请售后
-          </navigator>
+          <template v-if="!returnApply">
+            <navigator v-if="!returnApply" class="button primary" :url="`/pages/returnApply/index?id=${query.id}`"
+              hover-class="none">
+              申请售后
+            </navigator>
+          </template>
+          <template v-else>
+            <view v-if="returnApply.status == '0'" class="button primary">退货待处理</view>
+            <view v-if="returnApply.status == '1'" class="button primary">退货中</view>
+            <view v-if="returnApply.status == '2'" class="button primary">退货已完成</view>
+            <view v-if="returnApply.status == '3'" class="button primary">退货已拒绝</view>
+          </template>
         </template>
         <template v-if="order.orderInfo.status == '4'">
-          <view class="button primary">申请售后</view>
+          <template v-if="!returnApply">
+            <navigator v-if="!returnApply" class="button primary" :url="`/pages/returnApply/index?id=${query.id}`"
+              hover-class="none">
+              申请售后
+            </navigator>
+          </template>
+          <template v-else>
+            <view v-if="returnApply.status == '0'" class="button primary">退货待处理</view>
+            <view v-if="returnApply.status == '1'" class="button primary">退货中</view>
+            <view v-if="returnApply.status == '2'" class="button primary">退货已完成</view>
+            <view v-if="returnApply.status == '3'" class="button primary">退货已拒绝</view>
+          </template>
         </template>
       </view>
     </template>
@@ -449,6 +477,25 @@ page {
   .item {
     padding: 30rpx 0;
     border-bottom: 1rpx solid #eee;
+
+    .dianpu {
+      margin-bottom: 10rpx;
+
+      .name {
+        height: 72rpx;
+        font-size: 28rpx;
+        color: #444;
+      }
+
+      .label {
+        color: #fff;
+        padding: 7rpx 15rpx 5rpx;
+        border-radius: 4rpx;
+        font-size: 24rpx;
+        background-color: #dc9c4f;
+        margin-right: 10rpx;
+      }
+    }
 
     .navigator {
       display: flex;

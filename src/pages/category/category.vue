@@ -36,11 +36,11 @@ const subCategoryList = computed(() => {
 <template>
   <view class="viewport">
     <!-- 搜索框 -->
-    <view class="search">
+    <navigator class="search" hover-class="none" url="/pages/seacher/index">
       <view class="input">
-        <text class="icon-search">女靴</text>
+        <text class="icon-search">芒果</text>
       </view>
-    </view>
+    </navigator>
     <!-- 分类 -->
     <view class="categories">
       <!-- 左侧：一级分类 -->
@@ -55,7 +55,7 @@ const subCategoryList = computed(() => {
       <!-- 右侧：二级分类 -->
       <scroll-view enable-back-to-top class="secondary" scroll-y>
         <!-- 焦点图 -->
-        <Swiper class="banner" :list="bannerList" />
+        <!-- <Swiper class="banner" :list="bannerList" /> -->
         <!-- 内容区域 -->
         <view class="panel" v-for="item in subCategoryList" :key="item.id">
           <view class="title">

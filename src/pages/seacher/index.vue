@@ -1,7 +1,7 @@
 <template>
   <view class="caption">
     <navigator class="search">
-      <input  type="text" v-model="inputValue" placeholder="请输入内容" />
+      <input type="text" v-model="inputValue" placeholder="请输入内容" />
       <navigator class="icon-scan" :url="`/pages/productList/index?name=${inputValue}`">
       </navigator>
     </navigator>
@@ -23,10 +23,9 @@ let inputValue = ref<any>('')
   font-size: 32rpx;
   color: #262626;
 
-
   .search {
     width: 90%;
-    background-color: #fff;
+    background-color: #f2f2f2;
     display: flex;
     align-items: center;
     justify-content: space-between;

@@ -8,7 +8,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
     <!-- logo文字 -->
     <view class="logo">
       <!-- <image class="logo-image" src="@/static/images/logo.png"></image> -->
-      <text class="logo-text">易提商城V1.0</text>
+      <text class="logo-text">假的商城V1.0</text>
     </view>
     <!-- 搜索条 -->
     <navigator class="search" url="/pages/seacher/index">
@@ -22,7 +22,8 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 /* 自定义导航条 */
 .navbar {
   //background-image: url(@/static/images/navigator_bg.png);
-  background-color: #e89b71;
+  background-color: #a6e531;
+  //background-color: #5ad912;
   background-size: cover;
   position: relative;
   display: flex;
