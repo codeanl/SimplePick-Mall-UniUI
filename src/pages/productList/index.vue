@@ -12,19 +12,27 @@ const query = defineProps<{
 const guessList = ref<any[]>([])
 const getHomeGoodsGuessLikeData = async () => {
   if (query.id) {
-    const res = await getHomeGoodsGuessLikeAPI({ categoryId: query.id })
+    const res = await getHomeGoodsGuessLikeAPI({ categoryId: query.id, searchType: searchType.value })
     guessList.value = res.data
   }
   if (query.name) {
-    const res = await getHomeGoodsGuessLikeAPI({ name: query.name })
+    const res = await getHomeGoodsGuessLikeAPI({ name: query.name, searchType: searchType.value })
     guessList.value = res.data
-    console.log(query.name);
   }
 }
 onMounted(() => {
   getHomeGoodsGuessLikeData()
 })
 
+let selectedOption = ref(0)
+let searchType = ref(0)
+let tabShow = (showid: number, searchTypeID: number) => {
+  console.log("展示的是" + showid + ",type是" + searchTypeID);
+  selectedOption.value = showid
+  searchType.value = searchTypeID
+  guessList.value = []
+  getHomeGoodsGuessLikeData()
+}
 
 </script>
 
@@ -36,14 +44,20 @@ onMounted(() => {
     </navigator>
   </view>
   <view class="shaixuan">
-    <view>
-      <text>推荐</text>
+    <view :class="{ 'show': selectedOption === 0 }">
+      <text @click="tabShow(0, 0)">推荐</text>
     </view>
-    <view>
-      <text>销量</text>
+    <view :class="{ 'show': selectedOption === 1 }">
+      <text @click="tabShow(1, 1)">最新</text>
     </view>
-    <view>
-      <text>价格</text>
+    <view :class="{ 'show': selectedOption === 2 }">
+      <text @click="tabShow(2, 2)">销量</text>
+    </view>
+    <view :class="{ 'show': selectedOption === 4 }">
+      <text @click="tabShow(4, 4)">价格⬆</text>
+    </view>
+    <view :class="{ 'show': selectedOption === 5 }">
+      <text @click="tabShow(5, 5)">价格⬇</text>
     </view>
   </view>
   <view class=" guess">
@@ -137,8 +151,14 @@ page {
 .shaixuan {
   display: flex;
 
+  .show {
+    color: #c95b5b;
+
+    .icon {}
+  }
+
   view {
-    margin: 20rpx 35rpx;
+    margin: 25rpx;
     font-size: 32rpx;
     color: #5c5c5c;
   }

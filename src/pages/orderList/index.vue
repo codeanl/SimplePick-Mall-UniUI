@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useMemberStore } from '@/stores'
+import { orderStateList } from '@/services/constants'
 // 获取会员Store
 const memberStore = useMemberStore()
 // 获取屏幕边界到安全区域距离
@@ -11,8 +12,8 @@ const orderTabs = ref([
   { orderState: 100, title: '全部', isRender: false },
   { orderState: 0, title: '待付款', isRender: false },
   { orderState: 1, title: '待发货', isRender: false },
-  { orderState: 2, title: '待收货', isRender: false },
-  { orderState: 3, title: '待评价', isRender: false },
+  { orderState: 2, title: '运输中', isRender: false },
+  { orderState: 3, title: '待提货', isRender: false },
 ])
 
 // 高亮下标
@@ -108,7 +109,7 @@ const onConfirm = async (id: number) => {
       if (success.confirm) {
         let res = await updateOrder({
           id: id,
-          status: "3",
+          status: "4",
           receiveTime: currentDateTime
         })
         if (res.code == 200) {
@@ -158,6 +159,7 @@ const onComment = async (id: number) => {
               <!-- <text class="date">{{ item.createTime }}</text> -->
               <!-- 订单状态文字 -->
               <!-- 待评价/已完成/已取消 状态: 展示删除订单 -->
+              <text class="statusText">{{ orderStateList[item.status].text }}</text>
               <text class="icon-delete"></text>
             </view>
             <!-- 商品信息，点击商品跳转到订单详情，不是商品详情 -->
@@ -184,14 +186,18 @@ const onComment = async (id: number) => {
                 <view class="button " @tap="onCancel(item.id)">取消订单</view>
                 <view class="button primary" @tap="onOrderPay(item.id)">去支付</view>
               </template>
+              <template v-if="item.status == '1'">
+                <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=id`" hover-class="none">
+                  再次购买
+                </navigator>
+              </template>
               <template v-if="item.status == '2'">
                 <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=id`" hover-class="none">
                   再次购买
                 </navigator>
-                <view class="button primary" @tap="onConfirm(item.id)">确认收货</view>
               </template>
               <template v-if="item.status == '3'">
-                <view class="button primary" @tap="onComment(item.id)">去评价</view>
+                <view class="button primary" @tap="onConfirm(item.id)">确认收货</view>
               </template>
             </view>
           </view>
@@ -303,6 +309,10 @@ page {
 
     .primary {
       color: #ff9240;
+    }
+
+    .statusText {
+      margin-left: 60rpx;
     }
 
     .icon-delete {

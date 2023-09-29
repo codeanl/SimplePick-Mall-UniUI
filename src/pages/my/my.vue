@@ -8,8 +8,8 @@ const orderTypes = [
   { type: '100', name: '全部', icon: 'icon-currency' },
   { type: '0', name: '待付款', icon: 'icon-currency' },
   { type: '1', name: '待发货', icon: 'icon-gift' },
-  { type: '2', name: '待收货', icon: 'icon-check' },
-  { type: '3', name: '待评价', icon: 'icon-comment' },
+  { type: '2', name: '运输中', icon: 'icon-check' },
+  { type: '3', name: '待提货', icon: 'icon-comment' },
 ]
 // 获取会员信息
 const memberStore = useMemberStore()
@@ -87,7 +87,7 @@ page {
   //background-size: 100% auto;
   background-color: #f3f3f3;
   //background-image: linear-gradient(#e89b71 0, #ff9545 180px, transparent 180px);
-  background-image: linear-gradient(#a6e531 0, #a6e531 180px, transparent 180px);
+  background-image: linear-gradient(#fe9333 0, #e9ee99 180px, transparent 180px);
 
 }
 

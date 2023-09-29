@@ -10,7 +10,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 // 订单备注
 const buyerMessage = ref('')
 const userName = ref('')
-const userPhone = ref('')
+const userPhone = ref('15678042170')
 // 配送时间
 const deliveryList = ref([
   { type: 1, text: '时间不限 (周一至周日)' },
@@ -75,10 +75,37 @@ let getCurrentDateTime = () => {
 }
 
 
-
-
 // 提交订单
 const onOrderSubmit = async () => {
+
+  //
+
+}
+
+const popup = ref<UniHelper.UniPopupInstance>()
+const alertDialog = ref<UniHelper.UniPopupInstance>()
+// 取消原因列表
+const reasonList = ref([
+  '商品无货',
+  '不想要了',
+  '商品信息填错了',
+  '地址信息填写错误',
+  '商品降价',
+  '其它',
+])
+// 订单取消原因
+let reason = ref('')
+
+let isture = ref(false)
+let place = ref<any>()
+let ddd = (item: any) => {
+  reason.value = item
+  place.value = item
+  isture.value = true
+}
+
+
+let check = () => {
   //校验
   if (userName.value === '' || userPhone.value === '') {
     uni.showToast({
@@ -103,7 +130,13 @@ const onOrderSubmit = async () => {
     });
     return;
   }
-  //
+}
+
+const currentDateTime = getCurrentDateTime();
+import { updateOrder } from '@/services/order'
+//稍后支付
+let toDoPay = async () => {
+  check()
   const orderNumber = generateOrderNumber();
   let skuIDs: any = []
   let ids = ref<any>([])
@@ -116,7 +149,6 @@ const onOrderSubmit = async () => {
       }
     )
   }
-
   const res = await addOrder({
     memberId: memberStore?.profile.info.id,
     placeId: place!.value.id,        //
@@ -136,38 +168,58 @@ const onOrderSubmit = async () => {
     skus: skuIDs,
   })
   if (res.code == 200) {
-    uni.redirectTo({ url: `/pages/detail/index?id=${res.data.orderID as number}` })
-    console.log(ids.value);
     await deleteCart({ ids: ids.value })
+    uni.redirectTo({ url: `/pages/orderList/index?status=0` })
   }
 }
 
-const popup = ref<UniHelper.UniPopupInstance>()
-// 取消原因列表
-const reasonList = ref([
-  '商品无货',
-  '不想要了',
-  '商品信息填错了',
-  '地址信息填写错误',
-  '商品降价',
-  '其它',
-])
-// 订单取消原因
-let reason = ref('')
-
-let isture = ref(false)
-let place = ref<any>()
-let ddd = (item: any) => {
-  reason.value = item
-  place.value = item
-  isture.value = true
+//立即支付
+let toPay = async () => {
+  check()
+  const orderNumber = generateOrderNumber();
+  let skuIDs: any = []
+  let ids = ref<any>([])
+  for (let index = 0; index < skus?.value.length; index++) {
+    ids.value.push(parseInt(skus.value[index].id))
+    skuIDs.push(
+      {
+        skuID: skus.value[index].skuID as number,
+        count: skus.value[index].count as number,
+      }
+    )
+  }
+  const res = await addOrder({
+    memberId: memberStore?.profile.info.id,
+    placeId: place!.value.id,        //
+    couponId: 0,        //
+    orderSn: orderNumber,
+    memberUserName: memberStore.profile.info.nickname,
+    totalAmount: addPri,
+    payAmount: addPri,
+    freightAmount: 0,
+    couponAmount: 0,
+    payType: "1",
+    status: "0",
+    orderType: "1",
+    receiverName: userName.value,
+    receiverPhone: userPhone.value,
+    note: buyerMessage.value,
+    skus: skuIDs,
+  })
+  if (res.code == 200) {
+    await deleteCart({ ids: ids.value })
+    for (const i in res.data.orderID) {
+      let res1 = await updateOrder({
+        id: res.data.orderID[i],
+        status: "1",
+        paymentTime: currentDateTime
+      })
+    }
+    uni.redirectTo({ url: `/pages/orderList/index?status=1` })
+  }
 }
 </script>
 <template>
-  <!-- 收货地址 -->
-  <view>
-
-  </view>
   <scroll-view scroll-y class="viewport">
     <!-- 商品信息 -->
     <view class="goods">
@@ -225,7 +277,7 @@ let ddd = (item: any) => {
     <view class="total-pay symbol">
       <text class="number"> {{ addPri }} </text>
     </view>
-    <view class="button" @tap="onOrderSubmit">
+    <view class="button" @tap=" alertDialog?.open?.()">
       提交订单
     </view>
   </view>
@@ -246,6 +298,12 @@ let ddd = (item: any) => {
         <view class="button primary" @tap="popup?.close?.()">确认</view>
       </view>
     </view>
+  </uni-popup>
+
+
+  <uni-popup ref="alertDialog" type="dialog">
+    <uni-popup-dialog type="success" cancelText="稍后支付" confirmText="现在支付" content="请支付订单!" @confirm="toPay"
+      @close="toDoPay"></uni-popup-dialog>
   </uni-popup>
 </template>
 

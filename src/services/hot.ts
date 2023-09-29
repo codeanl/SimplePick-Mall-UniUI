@@ -9,9 +9,10 @@ export const getHotApi = () => {
     })
 }
 
-export const getHotProductApi = (subjectId: number) => {
+export const getHotProductApi = (data: any) => {
     return http<any[]>({
-        method: 'GET',
-        url: `/api/index/subjectProductList?subjectId=${subjectId}`,
+        method: 'POST',
+        url: '/api/index/subjectProductList',
+        data,
     });
 };

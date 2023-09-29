@@ -94,7 +94,7 @@ const onConfirm = async () => {
       if (success.confirm) {
         let res = await updateOrder({
           id: idd,
-          status: "3",
+          status: "4",
           receiveTime: currentDateTime
         })
         if (res.code == 200) {
@@ -162,13 +162,11 @@ let ddd = (item: any) => {
             <text class="money">应付金额: {{ order.orderInfo.payAmount }} 元</text>
           </view>
         </template>
-        <template v-else>
-          <!-- 订单状态文字 -->
-          <view class="status" v-if="order.orderInfo.status == '1'"> 待发货 </view>
-          <view class="status" v-if="order.orderInfo.status == '2'"> 已发货 </view>
-          <view class="status" v-if="order.orderInfo.status == '4'"> 订单完成 </view>
-          <view class="status" v-if="order.orderInfo.status == '5'"> 订单无效 </view>
-        </template>
+        <view class="status" v-if="order.orderInfo.status == '1'"> 待发货 </view>
+        <view class="status" v-if="order.orderInfo.status == '2'"> 运输中 </view>
+        <view class="status" v-if="order.orderInfo.status == '3'"> 待提货 </view>
+        <view class="status" v-if="order.orderInfo.status == '4'"> 订单完成 </view>
+        <view class="status" v-if="order.orderInfo.status == '5'"> 订单无效 </view>
       </view>
 
       <!-- 商品信息 -->
@@ -241,27 +239,18 @@ let ddd = (item: any) => {
           <view class="button primary" @tap="onOrderPay"> 去支付 </view>
           <view class="button" @tap="onCancel"> 取消订单 </view>
         </template>
-        <template v-if="order.orderInfo.status == '2'">
-          <navigator v-if="order.orderInfo.status == '2'" class="button secondary"
-            :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
+        <template v-if="order.orderInfo.status == '1'">
+          <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
             再次购买
           </navigator>
-          <view class="button primary" v-if="order.orderInfo.status == '2'" @tap="onConfirm"> 确认收货 </view>
+        </template>
+        <template v-if="order.orderInfo.status == '2'">
+          <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
+            再次购买
+          </navigator>
         </template>
         <template v-if="order.orderInfo.status == '3'">
-          <view class="button" @tap="onComment"> 去评价 </view>
-          <template v-if="!returnApply">
-            <navigator v-if="!returnApply" class="button primary" :url="`/pages/returnApply/index?id=${query.id}`"
-              hover-class="none">
-              申请售后
-            </navigator>
-          </template>
-          <template v-else>
-            <view v-if="returnApply.status == '0'" class="button primary">退货待处理</view>
-            <view v-if="returnApply.status == '1'" class="button primary">退货中</view>
-            <view v-if="returnApply.status == '2'" class="button primary">退货已完成</view>
-            <view v-if="returnApply.status == '3'" class="button primary">退货已拒绝</view>
-          </template>
+          <view class="button primary" @tap="onConfirm"> 确认收货 </view>
         </template>
         <template v-if="order.orderInfo.status == '4'">
           <template v-if="!returnApply">

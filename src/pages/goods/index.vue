@@ -172,7 +172,7 @@ const onBuyNow = (ev: SkuPopupEvent) => {
         <view class="price">
           <text class="symbol">¥</text>
           <text class="number">{{ goods?.productInfo.price }}</text>
-          <text class="xiaoliang">已售 {{ goods?.productInfo.price }}</text>
+          <text class="xiaoliang">已售 {{ goods?.productInfo.sale }}</text>
         </view>
         <view class="name ellipsis">{{ goods?.productInfo.name }}</view>
         <view class="desc"> {{ goods?.productInfo.desc }} </view>
@@ -438,8 +438,8 @@ page {
   align-items: center;
 
   .image {
-    width: 140rpx;
-    height: 140rpx;
+    width: 120rpx;
+    height: 120rpx;
     border-radius: 50%;
   }
 
@@ -448,17 +448,17 @@ page {
 
     .name {
       height: 72rpx;
-      font-size: 36rpx;
+      font-size: 32rpx;
       color: #444;
     }
   }
 
   .button {
     margin-left: 28rpx;
-    font-size: 40rpx;
+    font-size: 30rpx;
     color: #444;
     border-radius: 72rpx;
-    width: 160rpx;
+    width: 140rpx;
     border: 1rpx solid #ccc;
     text-align: center;
   }

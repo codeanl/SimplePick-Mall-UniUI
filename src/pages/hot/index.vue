@@ -12,11 +12,11 @@ const query = defineProps<{
 }>()
 // 动态设置标题
 uni.setNavigationBarTitle({ title: query.name })
-
 // 获取热门推荐数据
 const productList = ref<any[]>([])
+
 const getHomeHotData = async () => {
-  const res = await getHotProductApi(query.id)
+  const res = await getHotProductApi({ subjectId: parseInt(query.id), status: '1' })
   productList.value = res.data
 }
 
