@@ -21,7 +21,7 @@ const query = defineProps<{
 // 获取商品详情信息
 const goods = ref<any>()
 const getGoodsByIdData = async () => {
-  let id = Number(query.id);
+  let id = Number(query.id)
   const res = await getProductInfoAPI({ id: id })
   goods.value = res.data
   // SKU组件所需格式
@@ -49,7 +49,6 @@ const getGoodsByIdData = async () => {
   }
 }
 
-
 // 页面加载
 onLoad(() => {
   getGoodsByIdData()
@@ -69,7 +68,6 @@ const onTapImage = (url: string) => {
     urls: goods.value!.imgUrl,
   })
 }
-
 
 // uni-ui 弹出层组件 ref
 const popup = ref<{
@@ -120,21 +118,18 @@ const onAddCart = async (ev: SkuPopupEvent) => {
 }
 // 立即购买
 const onBuyNow = (ev: SkuPopupEvent) => {
-  console.log(ev._id, ev.buy_num);
   // uni.navigateTo({ url: `/pagesOrder/create/create?skuId=${ev._id}&count=${ev.buy_num}` })
   let sku: any = []
-  sku.push(
-    {
-      id: ev._id,
-      count: ev.buy_num,
-      skuID: ev._id,
-      name: goods.value.productInfo.name,
-      pic: goods.value.productInfo.pic,
-      price: ev.price / 100,
-      tag: ev.sku_name_arr,
-      productId: goods.value.productInfo.id,
-    }
-  )
+  sku.push({
+    id: ev._id,
+    count: ev.buy_num,
+    skuID: ev._id,
+    name: goods.value.productInfo.name,
+    pic: goods.value.productInfo.pic,
+    price: ev.price / 100,
+    tag: ev.sku_name_arr,
+    productId: goods.value.productInfo.id,
+  })
   // 跳转到结算页
   uni.navigateTo({
     url: '/pages/orderCreate/index?sku=' + encodeURIComponent(JSON.stringify(sku)),
@@ -144,12 +139,21 @@ const onBuyNow = (ev: SkuPopupEvent) => {
 
 <template>
   <!-- SKU弹窗组件 -->
-  <vk-data-goods-sku-popup v-model="isShowSku" :localdata="localdata" :mode="mode" add-cart-background-color="#FFA868"
-    buy-now-background-color="#27BA9B" ref="skuPopupRef" :actived-style="{
+  <vk-data-goods-sku-popup
+    v-model="isShowSku"
+    :localdata="localdata"
+    :mode="mode"
+    add-cart-background-color="#FFA868"
+    buy-now-background-color="#27BA9B"
+    ref="skuPopupRef"
+    :actived-style="{
       color: '#27BA9B',
       borderColor: '#27BA9B',
       backgroundColor: '#E9F8F5',
-    }" @add-cart="onAddCart" @buy-now="onBuyNow" />
+    }"
+    @add-cart="onAddCart"
+    @buy-now="onBuyNow"
+  />
   <scroll-view scroll-y class="viewport">
     <!-- 基本信息 -->
     <view class="goods">
@@ -195,14 +199,12 @@ const onBuyNow = (ev: SkuPopupEvent) => {
       </view>
 
       <!-- 商品详情 -->
-      <view class="merchant  ">
+      <view class="merchant">
         <image class="image" :src="goods?.merchantInfo.pic"></image>
         <text class="info">
           <text class="name">{{ goods?.merchantInfo.name }}</text>
         </text>
-        <navigator class="button" url="/pages/login/index" open-type="navigate">
-          进店
-        </navigator>
+        <navigator class="button" url="/pages/login/index" open-type="navigate"> 进店 </navigator>
       </view>
 
       <!-- 商品详情 -->
@@ -221,11 +223,16 @@ const onBuyNow = (ev: SkuPopupEvent) => {
             </view>
           </view>
           <!-- 图片详情 -->
-          <image class="image" v-for="item in goods?.introduceImgUrl" :key="item" mode="widthFix" :src="item"></image>
+          <image
+            class="image"
+            v-for="item in goods?.introduceImgUrl"
+            :key="item"
+            mode="widthFix"
+            :src="item"
+          ></image>
         </view>
       </view>
     </view>
-
   </scroll-view>
 
   <!-- 用户操作 -->
@@ -565,7 +572,7 @@ page {
   .buttons {
     display: flex;
 
-    &>view {
+    & > view {
       width: 220rpx;
       text-align: center;
       line-height: 72rpx;

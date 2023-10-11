@@ -46,7 +46,7 @@ defineProps<{
   position: relative;
   overflow: hidden;
   transform: translateY(0);
-  background-color: #e7e4e4;
+  background-color: #f5f4f4;
   width: 97%;
   margin-left: auto;
   margin-right: auto;

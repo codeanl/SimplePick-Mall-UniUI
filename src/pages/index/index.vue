@@ -63,8 +63,15 @@ const onRefresherrefresh = async () => {
     <!-- 自定义导航栏 -->
     <CustomNavbar />
     <!-- 滚动容器 -->
-    <scroll-view enable-back-to-top refresher-enabled @refresherrefresh="onRefresherrefresh"
-      :refresher-triggered="isTriggered" @scrolltolower="onScrolltolower" class="scroll-view" scroll-y>
+    <scroll-view
+      enable-back-to-top
+      refresher-enabled
+      @refresherrefresh="onRefresherrefresh"
+      :refresher-triggered="isTriggered"
+      @scrolltolower="onScrolltolower"
+      class="scroll-view"
+      scroll-y
+    >
       <template>
         <!-- 自定义轮播图 -->
         <Swiper :list="bannerList" />

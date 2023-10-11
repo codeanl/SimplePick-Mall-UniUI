@@ -10,7 +10,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 // 订单备注
 const buyerMessage = ref('')
 const userName = ref('')
-const userPhone = ref('15678042170')
+const userPhone = ref('')
 // 配送时间
 const deliveryList = ref([
   { type: 1, text: '时间不限 (周一至周日)' },
@@ -132,6 +132,7 @@ let check = () => {
   }
 }
 
+
 const currentDateTime = getCurrentDateTime();
 import { updateOrder } from '@/services/order'
 //稍后支付
@@ -215,8 +216,13 @@ let toPay = async () => {
         paymentTime: currentDateTime
       })
     }
-    uni.redirectTo({ url: `/pages/orderList/index?status=1` })
+    uni.redirectTo({ url: `/pages/payment/index?status=1` })
   }
+}
+
+const dddd=()=>{
+  console.log(111);
+  
 }
 </script>
 <template>
@@ -258,7 +264,6 @@ let toPay = async () => {
       </view>
       <view class="item">
         <text class="text">自提点</text>
-        <!-- <view @tap="popup?.open?.()">{{ isture ? place.value.name : '请选择' }} </view> -->
         <view @tap="popup?.open?.()">{{ place ? place.name : "请填写自提点" }} </view>
       </view>
     </view>
@@ -295,11 +300,10 @@ let toPay = async () => {
       </view>
       <view class="footer">
         <!-- <view class="button" @tap="popup?.close?.()">取消</view> -->
-        <view class="button primary" @tap="popup?.close?.()">确认</view>
+        <view class="button primary" @tap="popup?.close?.() ">确认</view>
       </view>
     </view>
   </uni-popup>
-
 
   <uni-popup ref="alertDialog" type="dialog">
     <uni-popup-dialog type="success" cancelText="稍后支付" confirmText="现在支付" content="请支付订单!" @confirm="toPay"

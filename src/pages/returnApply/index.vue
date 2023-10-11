@@ -36,15 +36,16 @@
     <view class="item">
       <text class="text">凭证</text>
     </view>
-    <!-- <uni-section>
-      <view>
-        <uni-file-picker limit="1"></uni-file-picker>
-      </view>
-    </uni-section> -->
+    <!-- <view>
+      <uni-file-picker limit="1" title="请上传凭证" @select="upload"></uni-file-picker>
+    </view> -->
+    <view @tap="onAvatarChange">
+      <image class="pz" :src="pz" mode="aspectFill" />
+    </view>
   </view>
   <!--  -->
   <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
-    <view class="button delete" @click="limit11"> 取消订单 </view>
+    <view class="button delete" @click="limit11"> 提交 </view>
   </view>
   <!--  -->
   <uni-popup ref="popup" type="bottom" background-color="#fff">
@@ -53,7 +54,7 @@
       <view class="description">
         <view class="tips">请选退货原因：</view>
         <!-- @tap="reason = item" -->
-        <view class="cell" v-for="item in reasonList" :key="item" @click="ddd(item)">
+        <view class="cell" v-for=" item  in  reasonList " :key="item" @click="ddd(item)">
           <text class="text">{{ item.name }}</text>
           <text class="icon" :class="{ checked: item === reason }"></text>
         </view>
@@ -109,7 +110,7 @@ let dddd = () => {
 
 import { useMemberStore } from '@/stores'
 const memberStore = useMemberStore()
-
+let pz = ref('')
 let limit11 = async () => {
   let res = await addreturnApply({
     userID: memberStore?.profile.info.id,
@@ -117,7 +118,7 @@ let limit11 = async () => {
     returnReasonID: place.value.id,
     status: '0',
     description: description.value,
-    proofPics: '11',
+    proofPics: pz.value,
     returnAmount: order.value.orderInfo.totalAmount,
   })
   if (res.code == 200) {
@@ -125,6 +126,32 @@ let limit11 = async () => {
   }
 }
 
+// 
+const onAvatarChange = () => {
+  uni.chooseMedia({
+    // 文件个数
+    count: 1,
+    // 文件类型
+    mediaType: ['image'],
+    success: (res) => {
+      // 本地路径
+      const { tempFilePath } = res.tempFiles[0]
+      // 上传
+      uploadFile(tempFilePath)
+    },
+  })
+}
+const uploadFile = (file: string) => {
+  uni.uploadFile({
+    url: '/api/upload',
+    name: 'file',
+    filePath: file,
+    success: (res: any) => {
+      pz.value = JSON.parse(res.data).data
+      console.log(pz.value);
+    },
+  })
+}
 
 </script>
 
@@ -134,6 +161,12 @@ let limit11 = async () => {
   padding: 0 20rpx;
   border-radius: 10rpx;
   background-color: #fff;
+
+  .pz {
+    width: 200rpx;
+    height: 200rpx;
+    background-color: #e4dddd;
+  }
 
   .item {
     padding: 30rpx 0;
@@ -241,6 +274,12 @@ let limit11 = async () => {
   padding: 0 20rpx;
   border-radius: 10rpx;
   background-color: #fff;
+
+  .pz {
+    width: 300rpx;
+    height: 300rpx;
+    background-color: #f5f5f5;
+  }
 
   .item {
     display: flex;

@@ -32,12 +32,12 @@ const order = ref<any>()
 const getData = async (status: number) => {
   order.value = []
   if (status < 100) {
-    const res = await listOrder({ status: status, userID: memberStore.profile.info.id, })
+    const res = await listOrder({ status: status, userID: memberStore.profile.info.id })
     if (res.code === 200) {
       order.value = res.data
     }
   } else {
-    const res = await listOrder({ userID: memberStore.profile.info.id, })
+    const res = await listOrder({ userID: memberStore.profile.info.id })
     if (res.code === 200) {
       order.value = res.data
     }
@@ -46,32 +46,33 @@ const getData = async (status: number) => {
 
 let now = ref()
 let handleTabClick = (index: any, id: any) => {
+  console.log(index, id)
   now.value = id
-  activeIndex.value = index;
+  activeIndex.value = index
   orderTabs.value.forEach((item, i) => {
-    item.isRender = i === index;
-  });
+    item.isRender = i === index
+  })
   getData(id.toString())
 }
 let getCurrentDateTime = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，需要加 1，并补零
-  const day = String(now.getDate()).padStart(2, '0'); // 补零
-  const hours = String(now.getHours()).padStart(2, '0'); // 补零
-  const minutes = String(now.getMinutes()).padStart(2, '0'); // 补零
-  const seconds = String(now.getSeconds()).padStart(2, '0'); // 补零
-  const dateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  return dateTime;
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0') // 月份从 0 开始，需要加 1，并补零
+  const day = String(now.getDate()).padStart(2, '0') // 补零
+  const hours = String(now.getHours()).padStart(2, '0') // 补零
+  const minutes = String(now.getMinutes()).padStart(2, '0') // 补零
+  const seconds = String(now.getSeconds()).padStart(2, '0') // 补零
+  const dateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  return dateTime
 }
 
 import { orderInfo, updateOrder } from '@/services/order'
 // 订单支付
 const onOrderPay = async (id: number) => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   let res = await updateOrder({
     id: id,
-    status: "1",
+    status: '1',
     paymentTime: currentDateTime,
   })
   if (res.code == 200) {
@@ -83,7 +84,7 @@ const onOrderPay = async (id: number) => {
 const onDeliver = async (id: number) => {
   let res = await updateOrder({
     id: id,
-    status: "3",
+    status: '3',
   })
   if (res.code == 200) {
     uni.showToast({ icon: 'success', title: '模拟发货完成' })
@@ -91,16 +92,18 @@ const onDeliver = async (id: number) => {
 }
 
 const onCancel = async (id: number) => {
+  console.log(now.value)
   let res = await updateOrder({
     id: id,
-    status: "5",
+    status: '5',
   })
   if (res.code == 200) {
+    getData(now.value.toString())
     uni.showToast({ icon: 'success', title: '取消订单完成' })
   }
 }
 const onConfirm = async (id: number) => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   // 二次确认弹窗
   uni.showModal({
     content: '为保障您的权益，请收到货并确认无误后，再确认收货',
@@ -109,10 +112,11 @@ const onConfirm = async (id: number) => {
       if (success.confirm) {
         let res = await updateOrder({
           id: id,
-          status: "4",
-          receiveTime: currentDateTime
+          status: '4',
+          receiveTime: currentDateTime,
         })
         if (res.code == 200) {
+          getData(now.value.toString())
           uni.showToast({ icon: 'success', title: '确认收货完成' })
         }
       }
@@ -120,15 +124,25 @@ const onConfirm = async (id: number) => {
   })
 }
 const onComment = async (id: number) => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   let res = await updateOrder({
     id: id,
-    status: "4",
-    commentTime: currentDateTime
+    status: '4',
+    commentTime: currentDateTime,
   })
   if (res.code == 200) {
     uni.showToast({ icon: 'success', title: '评论完成' })
   }
+}
+const isTriggered = ref(false)
+const onRefresherrefresh = async () => {
+  isTriggered.value = true
+
+  // isTriggered.value = false
+}
+
+const createOrder = () => {
+  console.log('111')
 }
 </script>
 
@@ -136,8 +150,12 @@ const onComment = async (id: number) => {
   <view class="viewport">
     <!-- tabs -->
     <view class="tabs">
-      <text class="item" v-for="(item, index) in orderTabs" :key="item.title"
-        @tap="handleTabClick(index, item.orderState)">
+      <text
+        class="item"
+        v-for="(item, index) in orderTabs"
+        :key="item.title"
+        @tap="handleTabClick(index, item.orderState)"
+      >
         {{ item.title }}
       </text>
       <!-- 游标 -->
@@ -148,12 +166,12 @@ const onComment = async (id: number) => {
       <!-- 滑动项 -->
       <swiper-item v-for="item in orderTabs" :key="item.title">
         <!-- 订单列表 -->
-        <scroll-view scroll-y class="orders">
+        <scroll-view scroll-y class="orders" @refresherrefresh="onRefresherrefresh">
           <view class="card" v-for="item in order" :key="item">
             <!-- 订单信息 -->
             <view class="status">
               <navigator class="dianpu" url="/pages/login/index">
-                <text class=" label">店铺</text>
+                <text class="label">店铺</text>
                 <text class="name">{{ item?.merchantInfo.name }} ></text>
               </navigator>
               <!-- <text class="date">{{ item.createTime }}</text> -->
@@ -163,8 +181,13 @@ const onComment = async (id: number) => {
               <text class="icon-delete"></text>
             </view>
             <!-- 商品信息，点击商品跳转到订单详情，不是商品详情 -->
-            <navigator v-for="sku in item.skuList" :key="sku.id" class="goods" :url="`/pages/detail/index?id=${item.id}`"
-              hover-class="none">
+            <navigator
+              v-for="sku in item.skuList"
+              :key="sku.id"
+              class="goods"
+              :url="`/pages/detail/index?id=${item.id}`"
+              hover-class="none"
+            >
               <view class="cover">
                 <image class="image" mode="aspectFit" :src="sku.pic"></image>
               </view>
@@ -183,16 +206,28 @@ const onComment = async (id: number) => {
             <view class="action">
               <!-- 待付款状态：显示去支付按钮 -->
               <template v-if="item.status == '0'">
-                <view class="button " @tap="onCancel(item.id)">取消订单</view>
+                <view class="button" @tap="onCancel(item.id)">取消订单</view>
                 <view class="button primary" @tap="onOrderPay(item.id)">去支付</view>
               </template>
               <template v-if="item.status == '1'">
-                <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=id`" hover-class="none">
+                <navigator
+                  class="button secondary"
+                  :url="`/pages/orderCreate/index?sku=${encodeURIComponent(
+                    JSON.stringify(item.skuList),
+                  )}`"
+                  hover-class="none"
+                >
                   再次购买
                 </navigator>
               </template>
               <template v-if="item.status == '2'">
-                <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=id`" hover-class="none">
+                <navigator
+                  class="button secondary"
+                  :url="`/pages/orderCreate/index?sku=${encodeURIComponent(
+                    JSON.stringify(item.skuList),
+                  )}`"
+                  hover-class="none"
+                >
                   再次购买
                 </navigator>
               </template>

@@ -48,22 +48,22 @@ const getData = async () => {
 }
 
 let getCurrentDateTime = () => {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从 0 开始，需要加 1，并补零
-  const day = String(now.getDate()).padStart(2, '0'); // 补零
-  const hours = String(now.getHours()).padStart(2, '0'); // 补零
-  const minutes = String(now.getMinutes()).padStart(2, '0'); // 补零
-  const seconds = String(now.getSeconds()).padStart(2, '0'); // 补零
-  const dateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-  return dateTime;
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0') // 月份从 0 开始，需要加 1，并补零
+  const day = String(now.getDate()).padStart(2, '0') // 补零
+  const hours = String(now.getHours()).padStart(2, '0') // 补零
+  const minutes = String(now.getMinutes()).padStart(2, '0') // 补零
+  const seconds = String(now.getSeconds()).padStart(2, '0') // 补零
+  const dateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  return dateTime
 }
 // 订单支付
 const onOrderPay = async () => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   let res = await updateOrder({
     id: idd,
-    status: "1",
+    status: '1',
     paymentTime: currentDateTime,
   })
   if (res.code == 200) {
@@ -72,20 +72,18 @@ const onOrderPay = async () => {
   }
 }
 
-
 const onCancel = async () => {
   let res = await updateOrder({
     id: idd,
-    status: "5",
+    status: '5',
   })
   if (res.code == 200) {
     uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
   }
 }
 
-
 const onConfirm = async () => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   // 二次确认弹窗
   uni.showModal({
     content: '为保障您的权益，请收到货并确认无误后，再确认收货',
@@ -94,8 +92,8 @@ const onConfirm = async () => {
       if (success.confirm) {
         let res = await updateOrder({
           id: idd,
-          status: "4",
-          receiveTime: currentDateTime
+          status: '4',
+          receiveTime: currentDateTime,
         })
         if (res.code == 200) {
           uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
@@ -106,11 +104,11 @@ const onConfirm = async () => {
 }
 
 const onComment = async () => {
-  const currentDateTime = getCurrentDateTime();
+  const currentDateTime = getCurrentDateTime()
   let res = await updateOrder({
     id: idd,
-    status: "4",
-    commentTime: currentDateTime
+    status: '4',
+    commentTime: currentDateTime,
   })
   if (res.code == 200) {
     uni.redirectTo({ url: `/pages/detail/index?id=${query.id}` })
@@ -122,7 +120,7 @@ import { useMemberStore } from '@/stores'
 const memberStore = useMemberStore()
 
 let onOrderCancel = async () => {
-  console.log(returnReason.value.id);
+  console.log(returnReason.value.id)
   // await addreturnApply({
   //   userID: memberStore.profile.info.id,
   //   orderID: 1,
@@ -173,11 +171,16 @@ let ddd = (item: any) => {
       <view class="goods">
         <view class="item">
           <navigator class="dianpu" url="/pages/login/index">
-            <text class=" label">店铺</text>
+            <text class="label">店铺</text>
             <text class="name">{{ order?.merchantInfo.name }} ></text>
           </navigator>
-          <navigator class="navigator" v-for="item in order?.skuList" :key="item.id"
-            :url="`/pages/goods/goods?id=${item.spuId}`" hover-class="none">
+          <navigator
+            class="navigator"
+            v-for="item in order?.skuList"
+            :key="item.id"
+            :url="`/pages/goods/index?id=${item.productId}`"
+            hover-class="none"
+          >
             <image class="cover" :src="item.pic"></image>
             <view class="meta">
               <view class="name ellipsis">{{ item.name }}</view>
@@ -214,7 +217,8 @@ let ddd = (item: any) => {
         <view class="title">订单信息</view>
         <view class="row">
           <view class="item">
-            订单编号: {{ order?.orderInfo.orderSn }} <text class="copy" @tap="onCopy(order?.orderInfo.orderSn)">复制</text>
+            订单编号: {{ order?.orderInfo.orderSn }}
+            <text class="copy" @tap="onCopy(order?.orderInfo.orderSn)">复制</text>
           </view>
           <view class="item">下单时间:{{ order?.orderInfo.createTime }}</view>
         </view>
@@ -230,7 +234,6 @@ let ddd = (item: any) => {
         </view>
       </view>
 
-
       <!-- 底部操作栏 -->
       <view class="toolbar-height" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }"></view>
       <view class="toolbar" :style="{ paddingBottom: safeAreaInsets?.bottom + 'px' }">
@@ -240,12 +243,20 @@ let ddd = (item: any) => {
           <view class="button" @tap="onCancel"> 取消订单 </view>
         </template>
         <template v-if="order.orderInfo.status == '1'">
-          <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
+          <navigator
+            class="button secondary"
+            :url="`/pagesOrder/create/create?orderId=${query.id}`"
+            hover-class="none"
+          >
             再次购买
           </navigator>
         </template>
         <template v-if="order.orderInfo.status == '2'">
-          <navigator class="button secondary" :url="`/pagesOrder/create/create?orderId=${query.id}`" hover-class="none">
+          <navigator
+            class="button secondary"
+            :url="`/pagesOrder/create/create?orderId=${query.id}`"
+            hover-class="none"
+          >
             再次购买
           </navigator>
         </template>
@@ -254,8 +265,12 @@ let ddd = (item: any) => {
         </template>
         <template v-if="order.orderInfo.status == '4'">
           <template v-if="!returnApply">
-            <navigator v-if="!returnApply" class="button primary" :url="`/pages/returnApply/index?id=${query.id}`"
-              hover-class="none">
+            <navigator
+              v-if="!returnApply"
+              class="button primary"
+              :url="`/pages/returnApply/index?id=${query.id}`"
+              hover-class="none"
+            >
               申请售后
             </navigator>
           </template>

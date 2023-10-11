@@ -14,7 +14,7 @@ import { useMemberStore } from '@/stores'
 
 // const baseURL = 'https://pcapi-xiaotuxian-front-devtest.itheima.net'
 const baseURL = 'http://localhost:8089'
-
+// const baseURL = 'http://114.115.183.226:8089'
 // 添加拦截器
 const httpInterceptor = {
   // 拦截前触发
@@ -55,6 +55,7 @@ uni.addInterceptor('uploadFile', httpInterceptor)
  *    3.3 网络错误 -> 提示用户换网络
  */
 type Data<T> = {
+[x: string]: any
   code: string
   msg: string
   result: T
