@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { postLoginAPI, postLoginWxMinAPI, postLoginWxMinSimpleAPI } from '@/services/login'
+import { postLoginAPI, postLoginWxMinAPI, login } from '@/services/login'
 import { useMemberStore } from '@/stores'
 import { onLoad } from '@dcloudio/uni-app'
 import { ref } from 'vue'
@@ -22,12 +22,15 @@ const onGetphonenumber: UniHelper.ButtonOnGetphonenumber = async (ev) => {
 
 // 模拟手机号码快捷登录（开发练习）
 const onGetphonenumberSimple = async () => {
-  const res = await postLoginWxMinSimpleAPI()
+  const myInfo = {
+    username: 'codeanl',
+    password: '123456',
+  }
+  const res = await login(myInfo)
   if (res.code == 200) {
     loginSuccess(res.data)
   }
 }
-
 const loginSuccess = (profile: any) => {
   // 保存会员信息
   const memberStore = useMemberStore()
@@ -41,17 +44,22 @@ const loginSuccess = (profile: any) => {
   }, 500)
 }
 
-// #ifdef H5
+// #ifdef MP-WEIXIN
 // 传统表单登录，测试账号：13123456789 密码：123456，测试账号仅开发学习使用。
 const form = ref({
-  account: '13123456789',
-  password: '',
+  username: 'codeanl',
+  password: '123456',
 })
 
 // 表单提交
 const onSubmit = async () => {
-  const res = await postLoginAPI(form.value)
-  loginSuccess(res.result)
+  // const res = await postLoginAPI(form.value)
+  // loginSuccess(res.result)
+  console.log(form)
+  const res = await login(form.value)
+  if (res.code == 200) {
+    loginSuccess(res.data)
+  }
 }
 // #endif
 </script>
@@ -63,18 +71,23 @@ const onSubmit = async () => {
     </view>
     <view class="login">
       <!-- 网页端表单登录 -->
-      <!-- #ifdef H5 -->
-      <input v-model="form.account" class="input" type="text" placeholder="请输入用户名/手机号码" />
+      <!-- #ifdef MP-WEIXIN -->
+      <input
+        v-model="form.username"
+        class="input"
+        type="text"
+        placeholder="请输入用户名/手机号码"
+      />
       <input v-model="form.password" class="input" type="text" password placeholder="请输入密码" />
-      <button @tap="onSubmit" class="button phone">登录</button>
+      <button @click="onSubmit" class="button phone">登录</button>
       <!-- #endif -->
 
       <!-- 小程序端授权登录 -->
       <!-- #ifdef MP-WEIXIN -->
-      <button class="button phone" open-type="getPhoneNumber" @getphonenumber="onGetphonenumber">
+      <!-- <button class="button phone" open-type="getPhoneNumber" @getphonenumber="onGetphonenumber">
         <text class="icon icon-phone"></text>
         手机号快捷登录
-      </button>
+      </button> -->
       <!-- #endif -->
       <view class="extra">
         <view class="caption">

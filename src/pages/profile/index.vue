@@ -11,7 +11,7 @@ const { safeAreaInsets } = uni.getSystemInfoSync()
 // 获取个人信息，修改个人信息需提供初始值
 const profile = ref()
 const getMemberProfileData = async () => {
-  const requestData = { id: memberStore.profile.info.id };
+  const requestData = { id: memberStore.profile.info.id }
   const res = await getMemberProfileAPI(requestData)
   profile.value = res.data
   // 同步 Store 的头像和昵称，用于我的页面展示
@@ -68,10 +68,11 @@ const uploadFile = (file: string) => {
   })
 }
 let updateAvatar = async (data: any) => {
+  console.log(data.data)
   memberStore.profile!.info.avatar = data.data
   let res = await putMemberProfileAPI({
     id: memberStore.profile.info.id,
-    avatar: data.data
+    avatar: data.data,
   })
   if (res.code == 200) {
     uni.showToast({ icon: 'success', title: '更新成功' })
@@ -94,7 +95,7 @@ const onSubmit = async () => {
     nickname,
     gender,
     email,
-    signature
+    signature,
   })
   if (res.code == 200) {
     uni.showToast({ icon: 'success', title: '保存成功' })
@@ -162,7 +163,12 @@ const onSubmit = async () => {
         <!-- #endif -->
         <view class="form-item">
           <text class="label">个性签名</text>
-          <input class="input" type="text" placeholder="请填写个性签名" v-model="profile!.signature" />
+          <input
+            class="input"
+            type="text"
+            placeholder="请填写个性签名"
+            v-model="profile!.signature"
+          />
         </view>
       </view>
       <!-- 提交按钮 -->

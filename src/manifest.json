@@ -54,8 +54,16 @@
     "setting": {
       "urlCheck": false
     },
+    "h5": {
+      "service": {
+        "apis": [
+          "*",
+        ]
+      }
+    },
     "usingComponents": true
   },
+  
   "mp-alipay": {
     "usingComponents": true
   },

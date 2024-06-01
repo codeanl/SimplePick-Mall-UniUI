@@ -204,7 +204,7 @@ const onBuyNow = (ev: SkuPopupEvent) => {
         <text class="info">
           <text class="name">{{ goods?.merchantInfo.name }}</text>
         </text>
-        <navigator class="button" url="/pages/login/index" open-type="navigate"> 进店 </navigator>
+        <!-- <navigator class="button" url="/pages/login/index" open-type="navigate"> 进店 </navigator> -->
       </view>
 
       <!-- 商品详情 -->

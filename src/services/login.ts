@@ -21,15 +21,16 @@ export const postLoginWxMinAPI = (data: LoginWxMinParams) => {
  * 小程序登录_内测版
  * @param phoneNumber 模拟手机号码
  */
-export const postLoginWxMinSimpleAPI = () => {
+export const login = (data:LoginParams) => {
     return http<any>({
         method: 'POST',
         url: '/api/auth/login',
+        data,
     })
 }
 
 type LoginParams = {
-    account: string
+    username: string
     password: string
 }
 /**
